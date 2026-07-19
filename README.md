@@ -1,56 +1,54 @@
-# Welcome to your Expo app 👋
+# RiseUp
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Namaz vakitlerine alarm kuran, alarmın görevlerle (kıble pusulası, seccade tarama, sure
+okuma) kapatıldığı, başarıların günlük seriye ve paylaşılabilir seri kartlarına dönüştüğü
+mobil alışkanlık uygulaması.
 
-## Get started
+## Tasarım kaynakları
 
-1. Install dependencies
+Tüm ürün ve görsel kararlar `design/` altında yaşar — kod bu belgelerden türetilir:
 
-   ```bash
-   npm install
-   ```
+| Dosya | İçerik |
+|---|---|
+| [design/tokens.ts](design/tokens.ts) | Renk paleti (aydınlık/karanlık), tipografi, ölçüler, iş kuralı sabitleri — **tek doğruluk kaynağı** |
+| [design/DESIGN.md](design/DESIGN.md) | Ekran ekran tasarım belgesi (onboarding, alarm, görevler, istatistik, premium…) |
+| [design/ARCHITECTURE.md](design/ARCHITECTURE.md) | Atomik mimari: atom→molekül→organizma→şablon→ekran, servisler, store'lar |
+| [design/mockups.html](design/mockups.html) | 17 ekranın HTML mockup panosu (tarayıcıda aç) |
 
-2. Start the app
+Temel tasarım kuralları: ekran başına tek `#F4A261` vurgu; alarm + görev ekranları her
+zaman karanlık tema; hiçbir bileşende ham hex olmaz, renkler `tokens.ts` üzerinden gelir.
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Geliştirme
 
 ```bash
-npm run reset-project
+npm install
+npx expo start        # dev server
+npm run typecheck     # tsc --strict
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+> Not: Alarm güvenilirliği native modüller gerektirdiğinden (AlarmManager / Notifee
+> full-screen intent) proje **Expo dev client** varsayar; Expo Go alarm özellikleri için
+> yeterli değildir.
 
-### Other setup steps
+## Klasör yapısı
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```
+design/          tasarım belgeleri (yukarıda)
+src/
+├── app/         expo-router ekranları
+├── components/  atoms / molecules / organisms
+├── templates/   ekran şablonları
+├── services/    PrayerTimes, AlarmScheduler, StreakEngine…
+├── stores/      zustand + MMKV
+├── content/     quotes, verses, badges
+├── theme/       ThemeProvider + tokens
+└── i18n/        çeviriler
+```
 
-## Learn more
+## Yol haritası
 
-To learn more about developing your project with Expo, look at the following resources:
+Sprint planı ve iş listesi: [Issues](https://github.com/cagatay005/RiseUp/issues) ·
+[MVP milestone — 26 Temmuz 2026](https://github.com/cagatay005/RiseUp/milestone/1)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Bilinen açık konular: iOS critical alerts entitlement başvurusu, sure okuma STT tercihi,
+seccade doğrulama modeli, Community Hero rozetinin topluluk özelliği.
