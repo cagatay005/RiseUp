@@ -1,7 +1,7 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
-import { useColorScheme } from 'react-native';
+import { createContext, useContext, useMemo, type ReactNode } from 'react';
 
 import { themes, type ThemeColors, type ThemeName } from '../../design/tokens';
+import { useSettingsStore } from '@/stores';
 
 interface ThemeContextValue {
   themeName: ThemeName;
@@ -12,19 +12,15 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-// Not: tema tercihi kalıcılığı settingsStore'a bağlanacak (issue #3);
-// o zamana kadar başlangıç değeri sistem temasından gelir.
+/** Tema tercihi settingsStore'da yaşar (MMKV ile kalıcı); bu provider onu Context'e yansıtır. */
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const system = useColorScheme();
-  const [themeName, setThemeName] = useState<ThemeName>(system === 'dark' ? 'dark' : 'light');
-
-  const toggleTheme = useCallback(() => {
-    setThemeName((current) => (current === 'light' ? 'dark' : 'light'));
-  }, []);
+  const themeName = useSettingsStore((s) => s.theme);
+  const setTheme = useSettingsStore((s) => s.setTheme);
+  const toggleTheme = useSettingsStore((s) => s.toggleTheme);
 
   const value = useMemo<ThemeContextValue>(
-    () => ({ themeName, colors: themes[themeName], setThemeName, toggleTheme }),
-    [themeName, toggleTheme],
+    () => ({ themeName, colors: themes[themeName], setThemeName: setTheme, toggleTheme }),
+    [themeName, setTheme, toggleTheme],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
