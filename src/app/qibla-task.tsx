@@ -10,7 +10,7 @@ import { QuoteBlock } from '@/components/molecules';
 import { CompassDial } from '@/components/organisms';
 import { getDailyQuote } from '@/services/QuoteService';
 import { angularDifference, getQiblaBearing, magnetometerHeading } from '@/services/QiblaService';
-import { usePrayerStore } from '@/stores';
+import { usePrayerStore, useRingStore } from '@/stores';
 import { rules, spacing, useTheme } from '@/theme';
 
 export default function QiblaTaskScreen() {
@@ -41,10 +41,12 @@ export default function QiblaTaskScreen() {
 
   useEffect(() => {
     if (heldSeconds >= rules.qiblaHoldSeconds) {
-      // TODO(#9): Alarm çalma ekranı eklenince '/alarm-ring'e dönmeli.
-      router.replace({ pathname: '/(tabs)', params: { alarmId, completedTask: 'qibla' } });
+      // Alarm çalma ekranından push ile gelindi: tamamlanma ringStore'a yazılır,
+      // back ile çalma ekranına dönülür (o ekran sıradaki görevi gösterir).
+      useRingStore.getState().completeTask('qibla');
+      router.back();
     }
-  }, [alarmId, heldSeconds, router]);
+  }, [heldSeconds, router]);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>

@@ -1,4 +1,5 @@
 import * as Notifications from 'expo-notifications';
+import { router } from 'expo-router';
 import { Platform } from 'react-native';
 
 import { prayers } from '../../design/tokens';
@@ -136,6 +137,18 @@ function registerForegroundHandler(): void {
   });
 }
 
+/**
+ * Çalma ekranını açar. Full-screen intent olmadığından (üstteki DÜRÜST SINIR)
+ * ekran iki yoldan açılır: bildirime dokununca ve uygulama zaten ön plandayken
+ * alarm çaldığında. Soğuk açılışta kök Stack mount olmadan navigasyon
+ * düşmesin diye mikro-gecikme kullanılır.
+ */
+function openRingScreen(alarmId: string): void {
+  setTimeout(() => {
+    router.push({ pathname: '/alarm-ring', params: { alarmId } });
+  }, 0);
+}
+
 /** Bir alarm tetiklendiğinde aynı seansta yarınki oluşumunu hemen planlar. */
 function registerRescheduleOnFire(): () => void {
   const sub = Notifications.addNotificationReceivedListener((event) => {
@@ -143,9 +156,30 @@ function registerRescheduleOnFire(): () => void {
     if (!alarmId) return;
     const alarm = useAlarmsStore.getState().alarms.find((a) => a.id === alarmId);
     if (!alarm) return;
+    openRingScreen(alarmId);
     const { todayTimes, location } = usePrayerStore.getState();
     void syncAlarm(alarm, todayTimes, location);
   });
+  return () => sub.remove();
+}
+
+/** Bildirime dokununca (arka plan veya soğuk açılış) çalma ekranına gider. */
+function registerOpenRingOnTap(): () => void {
+  if (Platform.OS === 'web') return () => undefined;
+
+  const sub = Notifications.addNotificationResponseReceivedListener((response) => {
+    const alarmId = response.notification.request.content.data?.alarmId as string | undefined;
+    if (alarmId) openRingScreen(alarmId);
+  });
+
+  // Uygulamayı bir alarm bildirimi açtıysa (soğuk açılış) ekrana git.
+  void Notifications.getLastNotificationResponseAsync()
+    .then((response) => {
+      const alarmId = response?.notification.request.content.data?.alarmId as string | undefined;
+      if (alarmId) openRingScreen(alarmId);
+    })
+    .catch(() => undefined);
+
   return () => sub.remove();
 }
 
@@ -176,10 +210,12 @@ export function initAlarmScheduler(): () => void {
   });
 
   const unsubReschedule = registerRescheduleOnFire();
+  const unsubOpenRing = registerOpenRingOnTap();
 
   return () => {
     unsubAlarms();
     unsubPrayer();
     unsubReschedule();
+    unsubOpenRing();
   };
 }

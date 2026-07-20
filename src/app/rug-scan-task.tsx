@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText, Button, Heading } from '@/components/atoms';
 import { QuoteBlock } from '@/components/molecules';
 import { getDailyQuote } from '@/services/QuoteService';
-import { usePremiumStore } from '@/stores';
+import { usePremiumStore, useRingStore } from '@/stores';
 import { radius, spacing, useTheme } from '@/theme';
 
 export default function RugScanTaskScreen() {
@@ -30,8 +30,10 @@ export default function RugScanTaskScreen() {
       // MVP doğrulaması: kameranın gerçekten çerçeve yakalayabildiğini kontrol eder.
       // Desen/mihrab sınıflandırma modeli sonraki iterasyonda bu noktaya bağlanır.
       if (picture.width > 0 && picture.height > 0) {
-        // TODO(#9): Alarm çalma ekranı eklenince '/alarm-ring'e dönmeli.
-        router.replace({ pathname: '/(tabs)', params: { alarmId, completedTask: 'rugScan' } });
+        // Alarm çalma ekranından push ile gelindi: tamamlanma ringStore'a yazılır,
+        // back ile çalma ekranına dönülür (o ekran sıradaki görevi gösterir).
+        useRingStore.getState().completeTask('rugScan');
+        router.back();
       } else {
         Alert.alert('Try again', 'Move closer and keep the prayer rug clearly visible.');
       }
