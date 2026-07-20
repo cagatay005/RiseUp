@@ -1,0 +1,61 @@
+export interface Quote {
+  text: string;
+  attribution?: string;
+}
+
+/**
+ * 50 özgün söz (tokens.ts → rules.quotePoolSize ile eşleşir). Hiçbiri gerçek bir
+ * kişiye atfedilmez — yanlış kaynak göstermemek için tamamı yazarsız tutulur.
+ */
+export const quotes: readonly Quote[] = [
+  { text: 'The success of your day is decided before the sun rises.' },
+  { text: "Discipline whispers before dawn; excuses shout after sunrise." },
+  { text: 'Every quiet morning is a second chance you almost slept through.' },
+  { text: 'The world rewards those who rise before it does.' },
+  { text: 'A single dawn kept is worth a thousand promised tomorrows.' },
+  { text: 'Rise before the light, and the light will follow you all day.' },
+  { text: 'Habits are built in the hour no one is watching.' },
+  { text: 'The early hour asks little and gives everything.' },
+  { text: 'Consistency is quieter than motivation, and it outlasts it.' },
+  { text: 'The first prayer of the day sets the tone for all that follow.' },
+  { text: 'Sleep is a debt; dawn is where you start paying it back.' },
+  { text: 'What you do at first light shapes who you become by nightfall.' },
+  { text: 'A disciplined morning is a promise kept to yourself.' },
+  { text: 'The sun does not wait, and neither should your resolve.' },
+  { text: 'Stillness before dawn is the loudest kind of strength.' },
+  { text: 'Small risings, repeated daily, become an unshakeable life.' },
+  { text: 'The one who wakes with purpose rarely wastes the day.' },
+  { text: 'Dawn does not ask if you are ready; it simply arrives.' },
+  { text: 'Every sunrise is an invitation you can choose to accept.' },
+  { text: 'The quiet hours before the world wakes belong entirely to you.' },
+  { text: 'Rising early is a small victory that makes the rest possible.' },
+  { text: 'A day begun in stillness rarely ends in regret.' },
+  { text: 'Prayer at dawn is a conversation the rest of the day cannot interrupt.' },
+  { text: 'The tired excuse fades faster than the early alarm.' },
+  { text: 'What is repeated at sunrise becomes who you are by sunset.' },
+  { text: 'The first light rewards those who meet it standing.' },
+  { text: 'A single disciplined morning can undo a week of drifting.' },
+  { text: 'The world is quiet at dawn so you can hear yourself think.' },
+  { text: 'Waking with intention is the first act of a well-lived day.' },
+  { text: 'The early riser owns the morning; the morning owns no one else.' },
+  { text: 'Dawn is proof that beginnings are always available.' },
+  { text: 'Ten disciplined minutes at sunrise outweigh an hour of good intentions.' },
+  { text: 'The one who prays at dawn has already won something today.' },
+  { text: 'Every streak begins with a single reluctant morning.' },
+  { text: 'The alarm is not the enemy; the snooze is.' },
+  { text: 'A life of small, early victories rarely feels like struggle.' },
+  { text: 'The sky changes color to remind you that change is always possible.' },
+  { text: 'What is sacred is rarely convenient, and dawn is no exception.' },
+  { text: 'The early hour has no audience, which is exactly why it matters.' },
+  { text: 'Rising before the light is how quiet people become strong.' },
+  { text: 'The first breath of morning air is free; what you do with it is not.' },
+  { text: 'A streak is just a series of mornings you refused to skip.' },
+  { text: "Dawn does not remember yesterday's failure, only today's choice." },
+  { text: 'The one who rises with the sun rarely falls behind the day.' },
+  { text: 'Discipline is choosing dawn over comfort, again and again.' },
+  { text: 'The quiet before sunrise is where habits are truly built.' },
+  { text: 'Every morning kept is a brick in a life well built.' },
+  { text: 'The early prayer asks for little sleep and gives back great peace.' },
+  { text: 'What you protect at dawn, you rarely lose by dusk.' },
+  { text: 'The sun rises once a day; so does your chance to begin again.' },
+] as const;

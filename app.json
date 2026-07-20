@@ -41,6 +41,13 @@
         {
           "locationWhenInUsePermission": "RiseUp, namaz vakitlerini bulunduğunuz konuma göre hesaplamak için konumunuzu kullanır."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#F4A261"
+        }
       ]
     ],
     "experiments": {

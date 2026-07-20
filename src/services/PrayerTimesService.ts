@@ -6,19 +6,12 @@ import type { PermissionState } from '@/stores/settingsStore';
 import type { GeoPoint, PrayerTimes } from '@/stores/prayerStore';
 import { usePrayerStore } from '@/stores/prayerStore';
 import { useSettingsStore } from '@/stores/settingsStore';
+import { mapPermissionStatus } from './permissionUtils';
 
 const PRAYER_ORDER: PrayerId[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
-export function mapPermissionStatus(status: Location.PermissionStatus): PermissionState {
-  switch (status) {
-    case Location.PermissionStatus.GRANTED:
-      return 'granted';
-    case Location.PermissionStatus.DENIED:
-      return 'denied';
-    default:
-      return 'unknown';
-  }
-}
+// permissionUtils'teki paylaşılan eşleyici expo-notifications ile de kullanılır (PermissionsService).
+export { mapPermissionStatus };
 
 /**
  * Konum + tarihten 5 vakti hesaplar — saf fonksiyon, ağ/izin gerektirmez.

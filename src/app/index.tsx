@@ -1,11 +1,23 @@
+import { Redirect } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText, ArabicText, Heading } from '@/components/atoms';
+import { useSettingsStore } from '@/stores';
 import { spacing, useTheme } from '@/theme';
 
-// Geçici vitrin ekranı: tema + font altyapısının kabul testi.
-// Gerçek Ev ekranı (issue #7) geldiğinde yerini ona bırakır.
+// Kök yönlendirme kapısı: onboarding bitmemişse oraya gönderir (DESIGN.md §2).
+// Bittiyse geçici bir vitrin gösterir — gerçek Ev ekranı issue #6'da bunun yerini alır.
 export default function Index() {
+  const onboardingDone = useSettingsStore((s) => s.onboardingDone);
+
+  if (!onboardingDone) {
+    return <Redirect href="/onboarding/quote" />;
+  }
+
+  return <HomePlaceholder />;
+}
+
+function HomePlaceholder() {
   const { colors, themeName, toggleTheme } = useTheme();
 
   return (

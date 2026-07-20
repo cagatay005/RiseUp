@@ -1,2 +1,2 @@
 export * from '../../design/tokens';
-export { ThemeProvider, useTheme } from './ThemeProvider';
+export { ForcedThemeProvider, ThemeProvider, useTheme } from './ThemeProvider';

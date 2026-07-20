@@ -26,6 +26,19 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
+/**
+ * Kullanıcının tema tercihinden bağımsız olarak sabit bir temayı zorlar.
+ * Onboarding, alarm çalma ve görev ekranları her zaman karanlıktır (DESIGN.md) —
+ * bu ekranlar settingsStore.theme'i değil bu provider'ı kullanır.
+ */
+export function ForcedThemeProvider({ name, children }: { name: ThemeName; children: ReactNode }) {
+  const value = useMemo<ThemeContextValue>(
+    () => ({ themeName: name, colors: themes[name], setThemeName: () => {}, toggleTheme: () => {} }),
+    [name],
+  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+}
+
 export function useTheme(): ThemeContextValue {
   const ctx = useContext(ThemeContext);
   if (!ctx) {
