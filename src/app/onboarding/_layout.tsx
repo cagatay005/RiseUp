@@ -9,7 +9,7 @@ import { ForcedThemeProvider } from '@/theme';
 // üzerine geçer; bu route'tan çıkınca eski değere döner).
 export default function OnboardingLayout() {
   return (
-    <ForcedThemeProvider name="dark">
+    <ForcedThemeProvider>
       <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }} />
     </ForcedThemeProvider>

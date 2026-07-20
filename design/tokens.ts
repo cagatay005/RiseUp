@@ -52,25 +52,7 @@ export interface ThemeColors {
   ice: string;
 }
 
-/** Aydınlık tema — gündüz ekranları (Ev, İstatistik, Kupa, Ayarlar) */
-export const light: ThemeColors = {
-  background: '#F4F6F9',
-  surface: '#FFFFFF',
-  surfaceElevated: '#FFFFFF',
-  textPrimary: '#1A2332',
-  textSecondary: '#5C6B7A',
-  border: '#DDE3EA',
-  secondary: '#4A6984',
-  accent: '#F4A261',
-  accentText: '#A96219', // #F4A261 beyazda ~2:1 verir; küçük metinde bu şart
-  onAccent: '#48280A',
-  success: '#2A9D8F',
-  warning: '#E76F51',
-  gold: '#E9C46A',
-  ice: '#8ECAE6',
-} as const;
-
-/** Karanlık tema — alarm, görev ve gece ekranları (zorunlu), gündüzde opsiyonel */
+/** Uygulamanın tek ve zorunlu teması. */
 export const dark: ThemeColors = {
   background: '#0F1621',
   surface: '#1A2332',
@@ -88,8 +70,8 @@ export const dark: ThemeColors = {
   ice: '#9AD3EC',
 } as const;
 
-export type ThemeName = 'light' | 'dark';
-export const themes: Record<ThemeName, ThemeColors> = { light, dark };
+export type ThemeName = 'dark';
+export const themes: Record<ThemeName, ThemeColors> = { dark };
 
 // ---------------------------------------------------------------------------
 // TİPOGRAFİ

@@ -19,7 +19,7 @@ const PRAYER_IDS: PrayerId[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
 export default function AlarmSetupScreen() {
   return (
-    <ForcedThemeProvider name="dark">
+    <ForcedThemeProvider>
       <AlarmSetupContent />
     </ForcedThemeProvider>
   );

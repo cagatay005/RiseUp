@@ -7,9 +7,8 @@ import { useSettingsStore } from '../settingsStore';
 import { useStreakStore } from '../streakStore';
 
 describe('settingsStore', () => {
-  it('varsayılanlar: aydınlık tema, EN arayüz, TR meal, onboarding bitmemiş', () => {
+  it('varsayılanlar: EN arayüz, TR meal, onboarding bitmemiş', () => {
     const s = useSettingsStore.getState();
-    expect(s.theme).toBe('light');
     expect(s.language).toBe('en');
     expect(s.translationLanguage).toBe('tr');
     expect(s.onboardingDone).toBe(false);
@@ -18,14 +17,6 @@ describe('settingsStore', () => {
       notifications: 'unknown',
       criticalAlerts: 'unknown',
     });
-  });
-
-  it('toggleTheme light↔dark arasında gidip gelir', () => {
-    const { toggleTheme } = useSettingsStore.getState();
-    toggleTheme();
-    expect(useSettingsStore.getState().theme).toBe('dark');
-    toggleTheme();
-    expect(useSettingsStore.getState().theme).toBe('light');
   });
 
   it('meal dili arayüz dilinden bağımsız değişir', () => {
