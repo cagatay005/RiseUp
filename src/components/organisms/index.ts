@@ -5,3 +5,4 @@ export {
 } from './DigitalTimePicker';
 export { SleepScienceChart } from './SleepScienceChart';
 export { TaskAssignmentPanel, type TaskAssignmentPanelProps } from './TaskAssignmentPanel';
+export { CompassDial } from './CompassDial';
