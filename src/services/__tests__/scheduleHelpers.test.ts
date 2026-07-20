@@ -3,13 +3,11 @@ import { describe, expect, it } from '@jest/globals';
 import type { Alarm } from '@/stores/alarmsStore';
 import type { PrayerTimes } from '@/stores/prayerStore';
 import {
-  angleToMinuteOfHour,
+  computeOffsetMinutes,
   formatCountdown,
   getAlarmClockTime,
   getNextPrayer,
   getPickerBaseTime,
-  pointToAngleDeg,
-  shortestMinuteDelta,
 } from '../scheduleHelpers';
 
 const TIMES: PrayerTimes = {
@@ -110,58 +108,45 @@ describe('getPickerBaseTime', () => {
   });
 });
 
-describe('pointToAngleDeg', () => {
-  it('12 yönü (yukarı) 0°', () => {
-    expect(pointToAngleDeg(0, -100)).toBeCloseTo(0);
-  });
-  it('3 yönü (sağ) 90°', () => {
-    expect(pointToAngleDeg(100, 0)).toBeCloseTo(90);
-  });
-  it('6 yönü (aşağı) 180°', () => {
-    expect(pointToAngleDeg(0, 100)).toBeCloseTo(180);
-  });
-  it('9 yönü (sol) 270°', () => {
-    expect(pointToAngleDeg(-100, 0)).toBeCloseTo(270);
-  });
-});
-
-describe('angleToMinuteOfHour', () => {
-  it('0° → dakika 0', () => {
-    expect(angleToMinuteOfHour(0)).toBe(0);
-  });
-  it('90° → dakika 15', () => {
-    expect(angleToMinuteOfHour(90)).toBe(15);
-  });
-  it('180° → dakika 30', () => {
-    expect(angleToMinuteOfHour(180)).toBe(30);
-  });
-  it('270° → dakika 45', () => {
-    expect(angleToMinuteOfHour(270)).toBe(45);
-  });
-  it('359° → 60 taşar, 0\'a sarar', () => {
-    expect(angleToMinuteOfHour(359.5)).toBe(0);
-  });
-});
-
-describe('shortestMinuteDelta', () => {
+describe('computeOffsetMinutes', () => {
   it('küçük ileri fark olduğu gibi döner', () => {
-    expect(shortestMinuteDelta(10, 15)).toBe(5);
+    const base = new Date(2026, 6, 19, 5, 0);
+    const picked = new Date(2026, 6, 19, 5, 45);
+    expect(computeOffsetMinutes(base, picked)).toBe(45);
   });
+
   it('küçük geri fark negatif döner', () => {
-    expect(shortestMinuteDelta(15, 10)).toBe(-5);
+    const base = new Date(2026, 6, 19, 5, 30);
+    const picked = new Date(2026, 6, 19, 5, 0);
+    expect(computeOffsetMinutes(base, picked)).toBe(-30);
   });
-  it('saat sınırını sararak en kısa yolu bulur (55 → 5 = +10, -50 değil)', () => {
-    expect(shortestMinuteDelta(55, 5)).toBe(10);
+
+  it('kullanıcı vakti tamamen farklı bir saate taşıyabilir (sınırsız özgürlük)', () => {
+    const base = new Date(2026, 6, 19, 5, 0); // Fajr taban saati
+    const picked = new Date(2026, 6, 19, 14, 30); // kullanıcı öğleden sonraya taşıdı
+    expect(computeOffsetMinutes(base, picked)).toBe(9 * 60 + 30);
   });
-  it('ters yönde sarma (5 → 55 = -10, +50 değil)', () => {
-    expect(shortestMinuteDelta(5, 55)).toBe(-10);
+
+  it('gece yarısını en kısa yoldan sararak hesaplar (23:50 → 00:10 = +20, -1430 değil)', () => {
+    const base = new Date(2026, 6, 19, 23, 50);
+    const picked = new Date(2026, 6, 19, 0, 10);
+    expect(computeOffsetMinutes(base, picked)).toBe(20);
   });
-  it('sonuç her zaman [-30, 30] aralığında', () => {
-    for (let base = 0; base < 60; base += 7) {
-      for (let target = 0; target < 60; target += 7) {
-        const delta = shortestMinuteDelta(base, target);
-        expect(delta).toBeGreaterThanOrEqual(-30);
-        expect(delta).toBeLessThanOrEqual(30);
+
+  it('ters yönde gece yarısı sarımı (00:10 → 23:50 = -20)', () => {
+    const base = new Date(2026, 6, 19, 0, 10);
+    const picked = new Date(2026, 6, 19, 23, 50);
+    expect(computeOffsetMinutes(base, picked)).toBe(-20);
+  });
+
+  it('sonuç her zaman (-720, 720] aralığında kalır', () => {
+    for (let baseM = 0; baseM < 1440; baseM += 53) {
+      for (let targetM = 0; targetM < 1440; targetM += 53) {
+        const base = new Date(2026, 6, 19, Math.floor(baseM / 60), baseM % 60);
+        const picked = new Date(2026, 6, 19, Math.floor(targetM / 60), targetM % 60);
+        const delta = computeOffsetMinutes(base, picked);
+        expect(delta).toBeGreaterThan(-720);
+        expect(delta).toBeLessThanOrEqual(720);
       }
     }
   });

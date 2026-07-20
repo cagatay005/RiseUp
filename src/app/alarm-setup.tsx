@@ -1,12 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText, Button, Heading } from '@/components/atoms';
-import { AnalogClockPicker, TaskAssignmentPanel } from '@/components/organisms';
+import { DigitalTimePicker, TaskAssignmentPanel } from '@/components/organisms';
 import { prayers, type PrayerId, type TaskId } from '../../design/tokens';
+import { computeOffsetMinutes, getPickerBaseTime } from '@/services/scheduleHelpers';
 import { useAlarmsStore, usePrayerStore } from '@/stores';
 import { ForcedThemeProvider, radius, spacing, useTheme } from '@/theme';
 
@@ -30,9 +31,24 @@ function AlarmSetupContent() {
   const [offsetMinutes, setOffsetMinutes] = useState(0);
   const [taskIds, setTaskIds] = useState<TaskId[]>([]);
 
+  // Vaktin taban zamanı yalnız seçilen vakit/vakitler değişince yeniden hesaplanır;
+  // "now" burada sabit tutulur ki dijital saatteki her seçim baz zamanı kaydırmasın.
+  const baseTime = useMemo(
+    () => getPickerBaseTime(selectedPrayer, todayTimes, new Date()),
+    [selectedPrayer, todayTimes],
+  );
+  const displayTime = useMemo(
+    () => new Date(baseTime.getTime() + offsetMinutes * 60_000),
+    [baseTime, offsetMinutes],
+  );
+
   function selectPrayer(id: PrayerId) {
     setSelectedPrayer(id);
-    setOffsetMinutes(0); // vakit değişince ince ayar sıfırlanır
+    setOffsetMinutes(0); // vakit değişince saat o vaktin taban zamanına döner
+  }
+
+  function changeTime(picked: Date) {
+    setOffsetMinutes(computeOffsetMinutes(baseTime, picked));
   }
 
   function toggleTask(taskId: TaskId) {
@@ -57,32 +73,32 @@ function AlarmSetupContent() {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <AnalogClockPicker
-          prayerId={selectedPrayer}
-          todayTimes={todayTimes}
-          offsetMinutes={offsetMinutes}
-          onChangeOffset={setOffsetMinutes}
-        />
+        <View style={styles.centered}>
+          <AppText variant="bodySmall" color="textSecondary" style={styles.prayerLabel}>
+            {prayers[selectedPrayer].title}
+          </AppText>
+          <DigitalTimePicker value={displayTime} onChange={changeTime} />
 
-        <View style={styles.chips}>
-          {PRAYER_IDS.map((id) => {
-            const active = id === selectedPrayer;
-            return (
-              <Pressable
-                key={id}
-                onPress={() => selectPrayer(id)}
-                style={[
-                  styles.chip,
-                  {
-                    borderColor: active ? colors.secondary : colors.border,
-                    backgroundColor: colors.surfaceElevated,
-                  },
-                ]}
-              >
-                <AppText variant="bodySmall">{prayers[id].title}</AppText>
-              </Pressable>
-            );
-          })}
+          <View style={styles.chips}>
+            {PRAYER_IDS.map((id) => {
+              const active = id === selectedPrayer;
+              return (
+                <Pressable
+                  key={id}
+                  onPress={() => selectPrayer(id)}
+                  style={[
+                    styles.chip,
+                    {
+                      borderColor: active ? colors.secondary : colors.border,
+                      backgroundColor: colors.surfaceElevated,
+                    },
+                  ]}
+                >
+                  <AppText variant="bodySmall">{prayers[id].title}</AppText>
+                </Pressable>
+              );
+            })}
+          </View>
         </View>
 
         <AppText variant="caption" color="textSecondary" style={styles.taskLabel}>
@@ -112,11 +128,18 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: spacing.lg,
   },
+  centered: {
+    alignItems: 'center',
+  },
+  prayerLabel: {
+    marginTop: spacing.lg,
+    letterSpacing: 1,
+  },
   chips: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.sm,
-    marginTop: spacing.lg,
+    marginTop: spacing.xl,
     justifyContent: 'center',
   },
   chip: {
@@ -129,8 +152,10 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginTop: spacing.xl,
     marginBottom: spacing.sm,
+    alignSelf: 'flex-start',
   },
   save: {
     marginTop: spacing.md,
+    alignSelf: 'stretch',
   },
 });

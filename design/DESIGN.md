@@ -155,14 +155,21 @@ Basit gruplu liste:
 
 ---
 
-## 5. Alarm kurma ekranı — analog kadran
+## 5. Alarm kurma ekranı — dijital saat
 
-- Uygulama temasına uygun büyük analog saat (`analogClockDiameter`): akrep/yelkovan
-  sürüklenerek saat kurulur; kadran çevresi lacivert, seçili saat ibresi `accent`.
-- Kadranın üstünde seçilen saatin dijital karşılığı (canlı güncellenir, tabular).
-- Vakit kısayolları: 5 vakit çipi (Fajr, Dhuhr, Asr, Maghrib, Isha) — çipe basınca kadran o
-  günün hesaplanmış vaktine atlar; kullanıcı isterse ibreyi elle oynatıp vaktin ±dakika
-  öncesine/sonrasına alabilir.
+> **Revizyon (Temmuz 2026):** İlk sürümde sürüklenebilir analog kadran ve ±30 dakikayla
+> sınırlı ince ayar vardı. Gerçek cihazda test edilince bunun kullanıcıya yeterli özgürlük
+> tanımadığı görüldü; ekran dijital saat + AM/PM'e çevrildi ve ofset sınırı kaldırıldı.
+
+- Üstte seçili vaktin adı (ör. "Fajr"), altında büyük **dijital saat** (`typography.clockDigital`,
+  `accent` renginde) + yanında küçük **AM/PM** etiketi. Saate dokununca native saat seçici açılır
+  (iOS: inline spinner; Android: sistem dialogu) — kullanıcı istediği herhangi bir saati
+  seçebilir, sınırlama yoktur.
+- Vakit kısayolları: 5 vakit çipi (Fajr, Dhuhr, Asr, Maghrib, Isha) — bir çipe basmak saati o
+  günün hesaplanmış vaktine sıfırlar ve alarmın hangi vakitle ilişkilendirileceğini belirler
+  (görev kataloğu ve Ev ekranındaki gruplama hâlâ vakte göredir). Seçilen saat bu taban zamana
+  göre dakika cinsinden bir ofset olarak saklanır (`alarmsStore` — "vakit + ofset" modeli,
+  bkz. ARCHITECTURE.md §6); ofsetin büyüklüğüne artık üst sınır yoktur.
 - Altta görev atama bölümü (Ev ekranındakiyle aynı bileşen) ve **Save Alarm** birincil butonu.
 - Kaydedilen alarm işletim sistemi seviyesinde planlanır: uygulama/ekran kapalıyken de çalar.
 

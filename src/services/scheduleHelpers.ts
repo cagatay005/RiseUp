@@ -43,10 +43,10 @@ export function formatCountdown(target: Date, now: Date): string {
 }
 
 // ---------------------------------------------------------------------------
-// Analog kadran (AlarmSetup, issue #7)
+// Alarm kurma ekranı — dijital saat (AlarmSetup, issue #7 revizyonu)
 // ---------------------------------------------------------------------------
 
-/** Konum henüz yokken kadranın gösterebileceği kaba varsayılan saatler (yalnız görsel). */
+/** Konum henüz yokken gösterilebilecek kaba varsayılan saatler (yalnız görsel). */
 const FALLBACK_HOUR: Record<PrayerId, number> = {
   fajr: 5,
   dhuhr: 13,
@@ -55,7 +55,7 @@ const FALLBACK_HOUR: Record<PrayerId, number> = {
   isha: 21,
 };
 
-/** Kadranın taban zamanı: gerçek vakit varsa o, yoksa kaba bir tahmin. */
+/** Seçilen vaktin taban zamanı: gerçek vakit varsa o, yoksa kaba bir tahmin. */
 export function getPickerBaseTime(prayerId: PrayerId, todayTimes: PrayerTimes | null, now: Date): Date {
   if (todayTimes) return new Date(todayTimes[prayerId]);
   const hour = FALLBACK_HOUR[prayerId];
@@ -65,26 +65,17 @@ export function getPickerBaseTime(prayerId: PrayerId, todayTimes: PrayerTimes | 
 }
 
 /**
- * Dairenin merkezine göre (dx,dy) noktasının 12 yönünden saat yönünde açısı (0-360°).
- * dx/dy, dokunuşun kadran view'ının merkezine göre ofseti (locationX/Y - yarıçap).
+ * Kullanıcının dijital saat ile seçtiği zaman ile vaktin taban zamanı arasındaki
+ * dakika farkı — sınırsız (kullanıcıya tam özgürlük), gün sınırını en kısa yoldan
+ * saracak şekilde (-720, 720] aralığında (24 saatlik saatte herhangi bir noktaya
+ * ulaşmak için ±12 saat yeterlidir). Yalnızca saat/dakika bileşenleri kıyaslanır,
+ * takvim günü yok sayılır (native seçici tarihi değiştirmez, yalnız saati döner).
  */
-export function pointToAngleDeg(dx: number, dy: number): number {
-  const deg = (Math.atan2(dx, -dy) * 180) / Math.PI;
-  return deg < 0 ? deg + 360 : deg;
-}
-
-/** 0-360° açıyı saat içindeki dakikaya çevirir (360° = 60 dk). */
-export function angleToMinuteOfHour(angleDeg: number): number {
-  return Math.round((angleDeg / 360) * 60) % 60;
-}
-
-/**
- * İki dakika-içi-konum arasındaki en kısa imzalı farkı verir, [-30, 30] aralığında.
- * "±dakika öncesine/sonrasına" ince ayarı için — saati değiştirmez, yalnız yelkovanı.
- */
-export function shortestMinuteDelta(base: number, target: number): number {
-  let delta = target - base;
-  if (delta > 30) delta -= 60;
-  if (delta < -30) delta += 60;
+export function computeOffsetMinutes(base: Date, picked: Date): number {
+  const baseMinutes = base.getHours() * 60 + base.getMinutes();
+  const pickedMinutes = picked.getHours() * 60 + picked.getMinutes();
+  let delta = pickedMinutes - baseMinutes;
+  if (delta > 720) delta -= 1440;
+  if (delta <= -720) delta += 1440;
   return delta;
 }

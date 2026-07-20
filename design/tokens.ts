@@ -149,7 +149,6 @@ export const sizes = {
   tabBarHeight: 64,
   alarmRowHeight: 88,
   compassDiameter: 280,
-  analogClockDiameter: 260,
   shutterDiameter: 72,
   streakCardAspectRatio: 3 / 4, // paylaşılabilir dikey kart
   minTouchTarget: 44,

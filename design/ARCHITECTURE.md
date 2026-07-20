@@ -77,7 +77,7 @@ Ekranın ana blokları; store okur, servis çağırabilir.
 | `OnboardingPager` | 4 ekranı saran sayfalayıcı + Skip + Dot'lar |
 | `SleepScienceChart` | Uyku evreleri eğrisi, seher bölgesi accent taralı (statik SVG) |
 | `PermissionPanel` | PermissionRow listesi + gerekçe metni + Grant Permissions/Continue akışı |
-| `AnalogClockPicker` | Sürüklenebilir akrep/yelkovan, dijital karşılık, vakit kısayol çipleri |
+| `DigitalTimePicker` | Native saat seçici (iOS inline spinner / Android dialog), AM/PM, sınırsız ofset — vakit kısayol çipleriyle birlikte alarm-setup'ta kullanılır |
 | `AlarmList` | AlarmRow listesi + boş durum + FAB |
 | `TaskPicker` | 3 TaskCard'lı alt sayfa; kilitliye basınca Premium'a yönlendirir |
 | `NextPrayerHeader` | PrayerCountdown + QadaBanner |
