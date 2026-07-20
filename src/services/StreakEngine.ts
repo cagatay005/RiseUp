@@ -1,5 +1,5 @@
 import { rules } from '../../design/tokens';
-import { useStreakStore } from '@/stores/streakStore';
+import { useStreakStore, type AchievementCard } from '@/stores/streakStore';
 
 /**
  * Seri/dondurma/kaza kurallarının tek sahibi — streakStore'a yalnız bu servis
@@ -22,4 +22,22 @@ export function giveUp(): GiveUpResult {
   }
   s.applyEngineResult({ currentStreak: 0 });
   return { spentFreeze: false };
+}
+
+/**
+ * Sure okuma sonucu (DESIGN §6.3): eşik geçildiyse Kupa ekranı için bir
+ * "recitation" başarı kartı üretir. Eşiğin altı hiçbir şey yazmaz.
+ */
+export function completeRecitation(score: number, surah: string): boolean {
+  if (score < rules.recitationPassScore) return false;
+  const s = useStreakStore.getState();
+  const card: AchievementCard = {
+    id: `recitation-${Date.now().toString(36)}`,
+    type: 'recitation',
+    title: surah,
+    value: score,
+    earnedAt: new Date().toISOString(),
+  };
+  s.applyEngineResult({ cards: [...s.cards, card] });
+  return true;
 }

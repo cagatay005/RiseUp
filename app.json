@@ -49,6 +49,12 @@
           "icon": "./assets/images/icon.png",
           "color": "#F4A261"
         }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "RiseUp, sure okuma görevinde okumanızı değerlendirmek için mikrofonunuzu kullanır."
+        }
       ]
     ],
     "experiments": {

@@ -18,11 +18,10 @@ const TASK_ICONS: Record<(typeof tasks)[number]['icon'], keyof typeof Ionicons.g
   microphone: 'mic-outline',
 };
 
-// Sure okuma ekranı (#12) henüz yok — o gelene kadar recitation başlatılınca
-// doğrudan tamamlanmış sayılır (kullanıcıyı çıkışsız bırakmamak için).
-const TASK_ROUTES: Partial<Record<TaskId, '/qibla-task' | '/rug-scan-task'>> = {
+const TASK_ROUTES: Record<TaskId, '/qibla-task' | '/rug-scan-task' | '/recitation-task'> = {
   qibla: '/qibla-task',
   rugScan: '/rug-scan-task',
+  recitation: '/recitation-task',
 };
 
 /** Bildirimi kaldırınca alarm sesi de susar (ses bildirime aittir). */
@@ -111,13 +110,8 @@ function AlarmRingContent() {
     if (!nextTask) return;
     // TODO(#13): görev tamamlanınca günü "done" işaretlemek StreakEngine'e gelecek.
     silenceNotification(alarm!.id);
-    const route = TASK_ROUTES[nextTask.id];
-    if (route) {
-      // push: görev iptal edilirse back ile bu ekrana dönülür ve titreşim sürer.
-      router.push({ pathname: route, params: { alarmId: alarm!.id } });
-    } else {
-      useRingStore.getState().completeTask(nextTask.id);
-    }
+    // push: görev iptal edilirse back ile bu ekrana dönülür ve titreşim sürer.
+    router.push({ pathname: TASK_ROUTES[nextTask.id], params: { alarmId: alarm!.id } });
   }
 
   function confirmGiveUp() {

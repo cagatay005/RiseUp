@@ -150,6 +150,8 @@ export const rules = {
   /** Kıble görevi: doğru hizada tutulacak süre ve tolerans */
   qiblaHoldSeconds: 5,
   qiblaToleranceDegrees: 5,
+  /** Sure okuma görevi: geçme eşiği (0–100 skor) */
+  recitationPassScore: 60,
   /** Günlük özlü söz havuzu ve seçim: güne deterministik (tarih % 50) */
   quotePoolSize: 50,
   /** Her 15 günlük seri için bir başarı kartı üretilir */

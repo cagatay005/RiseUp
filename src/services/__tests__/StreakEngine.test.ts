@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from '@jest/globals';
 
 import { useStreakStore } from '../../stores/streakStore';
-import { giveUp } from '../StreakEngine';
+import { completeRecitation, giveUp } from '../StreakEngine';
 
 describe('StreakEngine.giveUp', () => {
   beforeEach(() => {
@@ -22,5 +22,25 @@ describe('StreakEngine.giveUp', () => {
     expect(result.spentFreeze).toBe(false);
     expect(useStreakStore.getState().currentStreak).toBe(0);
     expect(useStreakStore.getState().freezes).toBe(0);
+  });
+});
+
+describe('StreakEngine.completeRecitation', () => {
+  beforeEach(() => {
+    useStreakStore.getState().reset();
+  });
+
+  it('eşik altı skor kart üretmez', () => {
+    expect(completeRecitation(40, 'Al-Ikhlas')).toBe(false);
+    expect(useStreakStore.getState().cards).toHaveLength(0);
+  });
+
+  it('eşik üstü skor recitation kartı ekler', () => {
+    expect(completeRecitation(85, 'Al-Ikhlas')).toBe(true);
+    const cards = useStreakStore.getState().cards;
+    expect(cards).toHaveLength(1);
+    expect(cards[0]!.type).toBe('recitation');
+    expect(cards[0]!.title).toBe('Al-Ikhlas');
+    expect(cards[0]!.value).toBe(85);
   });
 });
