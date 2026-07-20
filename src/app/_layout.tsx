@@ -1,3 +1,15 @@
+// expo-notifications, Expo Go içinde import edilir edilmez (push token
+// otomatik kaydı Expo Go'da desteklenmediği için) Android'de console.error
+// ile LogBox'ı tam ekran kırmızı ekrana çeviriyor. Bu projede yalnız YEREL
+// bildirim kullanılıyor, push hiç kullanılmıyor, o yüzden zararsız — ama
+// diğer tüm import'lardan (özellikle AlarmScheduler -> expo-notifications
+// zincirinden) önce susturulmalı. Dev client/native build'de hiç tetiklenmez
+// (isRunningInExpoGo() false döner), yalnız biri Expo Go ile açarsa devreye girer.
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs([
+  'Android Push notifications (remote notifications) functionality provided by expo-notifications was removed from Expo Go',
+]);
+
 import { Amiri_400Regular } from '@expo-google-fonts/amiri';
 import {
   Inter_400Regular,
