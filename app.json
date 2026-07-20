@@ -8,7 +8,10 @@
     "scheme": "riseup",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "RiseUp, namaz vakitlerini bulunduğunuz konuma göre hesaplamak için konumunuzu kullanır."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -31,6 +34,12 @@
           "backgroundColor": "#0F1621",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "RiseUp, namaz vakitlerini bulunduğunuz konuma göre hesaplamak için konumunuzu kullanır."
         }
       ]
     ],
