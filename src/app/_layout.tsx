@@ -26,6 +26,7 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { initAlarmScheduler } from '@/services/AlarmScheduler';
+import { reconcileDays } from '@/services/StreakEngine';
 import { ThemeProvider, useTheme } from '@/theme';
 
 SplashScreen.preventAutoHideAsync();
@@ -63,6 +64,11 @@ export default function RootLayout() {
   }, [fontsLoaded]);
 
   useEffect(() => initAlarmScheduler(), []);
+
+  // Açılışta aradaki boş günleri kapat (dondurma harca / seri sıfırla).
+  useEffect(() => {
+    reconcileDays();
+  }, []);
 
   if (!fontsLoaded) {
     return null;

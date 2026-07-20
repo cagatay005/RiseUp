@@ -104,6 +104,13 @@ export default function RecitationTaskScreen() {
   // STT olmadığından kelime vurgusu sezgiseldir: skor oranı kadar kelime
   // "duyuldu" sayılır (RecitationService'teki DÜRÜST SINIR notu).
   const coveredWords = Math.round((score / 100) * words.length);
+  // Kayıt sırasında "şu an okunan yer" vurgusu: geçen süre / beklenen süre
+  // oranı kadar kelime accent'e boyanır (süre orantılı karaoke sezgiseli;
+  // örnekler 100 ms aralıklı geldiğinden levels.length ≈ geçen süre × 10).
+  const liveWords = Math.min(
+    words.length,
+    Math.ceil(((levels.length * 0.1) / expectedReadingSeconds(verse)) * words.length),
+  );
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -123,6 +130,18 @@ export default function RecitationTaskScreen() {
                 key={`${word}-${i}`}
                 variant="transliteration"
                 style={{ color: i < coveredWords ? colors.success : colors.textSecondary }}
+              >
+                {word}
+              </AppText>
+            ))}
+          </View>
+        ) : recorderState.isRecording ? (
+          <View style={styles.wordRow}>
+            {words.map((word, i) => (
+              <AppText
+                key={`${word}-${i}`}
+                variant="transliteration"
+                style={{ color: i < liveWords ? colors.accent : colors.textSecondary }}
               >
                 {word}
               </AppText>

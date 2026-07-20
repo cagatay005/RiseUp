@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText, Button, Heading } from '@/components/atoms';
 import { prayers, tasks, type TaskId } from '../../design/tokens';
-import { giveUp } from '@/services/StreakEngine';
+import { completeDay, giveUp } from '@/services/StreakEngine';
 import { useAlarmsStore, useRingStore, useStreakStore } from '@/stores';
 import { ForcedThemeProvider, radius, spacing, useTheme } from '@/theme';
 
@@ -190,7 +190,16 @@ function AlarmRingContent() {
         {nextTask ? (
           <Button title={`Start Task — ${nextTask.title}`} onPress={startNextTask} style={styles.fullWidth} />
         ) : (
-          <Button title="Dismiss Alarm" onPress={finishRing} style={styles.fullWidth} />
+          <Button
+            title="Dismiss Alarm"
+            onPress={() => {
+              // Gün kredisi yalnız en az bir görev gerçekten tamamlandıysa yazılır
+              // (görevsiz alarmı kapatmak seri saymaz — seri görev disiplinidir).
+              if (completedTaskIds.length > 0) completeDay();
+              finishRing();
+            }}
+            style={styles.fullWidth}
+          />
         )}
         {nextTask ? (
           <Pressable onPress={confirmGiveUp} accessibilityRole="button" style={styles.giveUpRow}>
