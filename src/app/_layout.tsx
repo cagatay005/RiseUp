@@ -11,6 +11,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { ThemeProvider, useTheme } from '@/theme';
 
@@ -53,8 +54,10 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider>
-      <ThemedStack />
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider>
+        <ThemedStack />
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }

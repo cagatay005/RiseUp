@@ -7,14 +7,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText, Button } from '@/components/atoms';
 import { DigitalClock, OnboardingFooter } from '@/components/molecules';
 import { refreshPrayerTimesIfStale } from '@/services/PrayerTimesService';
-import { useAlarmsStore, usePrayerStore, useSettingsStore } from '@/stores';
+import { usePrayerStore, useSettingsStore } from '@/stores';
 import { spacing, useTheme } from '@/theme';
 
 export default function OnboardingFirstAlarmScreen() {
   const router = useRouter();
   const { colors } = useTheme();
   const setOnboardingDone = useSettingsStore((s) => s.setOnboardingDone);
-  const addAlarm = useAlarmsStore((s) => s.addAlarm);
   const todayTimes = usePrayerStore((s) => s.todayTimes);
   const cityName = usePrayerStore((s) => s.cityName);
   const locationGranted = useSettingsStore((s) => s.permissionsSnapshot.location === 'granted');
@@ -31,10 +30,11 @@ export default function OnboardingFirstAlarmScreen() {
   }
 
   function setFirstAlarm() {
-    // TODO(#7): analog kadranlı Alarm kurma ekranına yönlendirmeli; o ekran
-    // gelene kadar varsayılan Fajr alarmı doğrudan burada oluşturuluyor.
-    addAlarm({ prayerId: 'fajr' });
+    // Onboarding'i bitirip Ev'e geçer, ardından Alarm kurma ekranını (TODO #7:
+    // şimdilik yer tutucu, analog kadranla değişecek) üstüne açar — Save/geri
+    // dönüşte kullanıcı doğal olarak Ev'de kalır.
     complete();
+    router.push('/alarm-setup');
   }
 
   return (
