@@ -1,21 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText, Button, Heading } from '@/components/atoms';
-import { prayers, type PrayerId } from '../../design/tokens';
-import { useAlarmsStore } from '@/stores';
+import { AnalogClockPicker, TaskAssignmentPanel } from '@/components/organisms';
+import { prayers, type PrayerId, type TaskId } from '../../design/tokens';
+import { useAlarmsStore, usePrayerStore } from '@/stores';
 import { ForcedThemeProvider, radius, spacing, useTheme } from '@/theme';
 
 const PRAYER_IDS: PrayerId[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
-/**
- * TODO(#7): analog kadranlı kurulum ekranıyla değiştirilecek. Şimdilik yalnızca
- * vakit seçimiyle alarm oluşturan sade bir yer tutucu — Home'daki "alarm ekle"
- * akışının uçtan uca çalışması için gereken minimum.
- */
 export default function AlarmSetupScreen() {
   return (
     <ForcedThemeProvider name="dark">
@@ -28,10 +24,25 @@ function AlarmSetupContent() {
   const router = useRouter();
   const { colors } = useTheme();
   const addAlarm = useAlarmsStore((s) => s.addAlarm);
-  const [selected, setSelected] = useState<PrayerId>('fajr');
+  const todayTimes = usePrayerStore((s) => s.todayTimes);
+
+  const [selectedPrayer, setSelectedPrayer] = useState<PrayerId>('fajr');
+  const [offsetMinutes, setOffsetMinutes] = useState(0);
+  const [taskIds, setTaskIds] = useState<TaskId[]>([]);
+
+  function selectPrayer(id: PrayerId) {
+    setSelectedPrayer(id);
+    setOffsetMinutes(0); // vakit değişince ince ayar sıfırlanır
+  }
+
+  function toggleTask(taskId: TaskId) {
+    setTaskIds((current) =>
+      current.includes(taskId) ? current.filter((id) => id !== taskId) : [...current, taskId],
+    );
+  }
 
   function save() {
-    addAlarm({ prayerId: selected });
+    addAlarm({ prayerId: selectedPrayer, offsetMinutes, taskIds });
     router.back();
   }
 
@@ -45,29 +56,42 @@ function AlarmSetupContent() {
         <View style={styles.headerSpacer} />
       </View>
 
-      <View style={styles.chips}>
-        {PRAYER_IDS.map((id) => {
-          const active = id === selected;
-          return (
-            <Pressable
-              key={id}
-              onPress={() => setSelected(id)}
-              style={[
-                styles.chip,
-                {
-                  borderColor: active ? colors.secondary : colors.border,
-                  backgroundColor: colors.surfaceElevated,
-                },
-              ]}
-            >
-              <AppText variant="bodySmall">{prayers[id].title}</AppText>
-            </Pressable>
-          );
-        })}
-      </View>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <AnalogClockPicker
+          prayerId={selectedPrayer}
+          todayTimes={todayTimes}
+          offsetMinutes={offsetMinutes}
+          onChangeOffset={setOffsetMinutes}
+        />
 
-      <View style={styles.spacer} />
-      <Button title="Save Alarm" onPress={save} />
+        <View style={styles.chips}>
+          {PRAYER_IDS.map((id) => {
+            const active = id === selectedPrayer;
+            return (
+              <Pressable
+                key={id}
+                onPress={() => selectPrayer(id)}
+                style={[
+                  styles.chip,
+                  {
+                    borderColor: active ? colors.secondary : colors.border,
+                    backgroundColor: colors.surfaceElevated,
+                  },
+                ]}
+              >
+                <AppText variant="bodySmall">{prayers[id].title}</AppText>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        <AppText variant="caption" color="textSecondary" style={styles.taskLabel}>
+          TASKS
+        </AppText>
+        <TaskAssignmentPanel selectedTaskIds={taskIds} onToggleTask={toggleTask} />
+      </ScrollView>
+
+      <Button title="Save Alarm" onPress={save} style={styles.save} />
     </SafeAreaView>
   );
 }
@@ -85,11 +109,15 @@ const styles = StyleSheet.create({
   headerSpacer: {
     width: 22,
   },
+  scrollContent: {
+    paddingBottom: spacing.lg,
+  },
   chips: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.sm,
-    marginTop: spacing.xl,
+    marginTop: spacing.lg,
+    justifyContent: 'center',
   },
   chip: {
     borderWidth: 1,
@@ -97,7 +125,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
-  spacer: {
-    flex: 1,
+  taskLabel: {
+    letterSpacing: 1,
+    marginTop: spacing.xl,
+    marginBottom: spacing.sm,
+  },
+  save: {
+    marginTop: spacing.md,
   },
 });

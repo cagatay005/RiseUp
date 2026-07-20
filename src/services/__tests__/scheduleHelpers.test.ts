@@ -2,7 +2,15 @@ import { describe, expect, it } from '@jest/globals';
 
 import type { Alarm } from '@/stores/alarmsStore';
 import type { PrayerTimes } from '@/stores/prayerStore';
-import { formatCountdown, getAlarmClockTime, getNextPrayer } from '../scheduleHelpers';
+import {
+  angleToMinuteOfHour,
+  formatCountdown,
+  getAlarmClockTime,
+  getNextPrayer,
+  getPickerBaseTime,
+  pointToAngleDeg,
+  shortestMinuteDelta,
+} from '../scheduleHelpers';
 
 const TIMES: PrayerTimes = {
   fajr: '2026-07-19T02:12:00.000Z',
@@ -85,5 +93,76 @@ describe('formatCountdown', () => {
     const now = new Date('2026-07-19T10:00:00.000Z');
     const target = new Date('2026-07-19T11:24:00.000Z');
     expect(formatCountdown(target, now)).toBe('1h 24m');
+  });
+});
+
+describe('getPickerBaseTime', () => {
+  it('gerçek vakit varsa onu döner', () => {
+    const result = getPickerBaseTime('fajr', TIMES, new Date('2026-07-19T12:00:00.000Z'));
+    expect(result.toISOString()).toBe(TIMES.fajr);
+  });
+
+  it('vakit yoksa kaba bir varsayılana düşer ve saati/dakikayı doğru kurar', () => {
+    const now = new Date('2026-07-19T12:00:00.000Z');
+    const result = getPickerBaseTime('asr', null, now);
+    expect(result.getHours()).toBe(16);
+    expect(result.getMinutes()).toBe(30);
+  });
+});
+
+describe('pointToAngleDeg', () => {
+  it('12 yönü (yukarı) 0°', () => {
+    expect(pointToAngleDeg(0, -100)).toBeCloseTo(0);
+  });
+  it('3 yönü (sağ) 90°', () => {
+    expect(pointToAngleDeg(100, 0)).toBeCloseTo(90);
+  });
+  it('6 yönü (aşağı) 180°', () => {
+    expect(pointToAngleDeg(0, 100)).toBeCloseTo(180);
+  });
+  it('9 yönü (sol) 270°', () => {
+    expect(pointToAngleDeg(-100, 0)).toBeCloseTo(270);
+  });
+});
+
+describe('angleToMinuteOfHour', () => {
+  it('0° → dakika 0', () => {
+    expect(angleToMinuteOfHour(0)).toBe(0);
+  });
+  it('90° → dakika 15', () => {
+    expect(angleToMinuteOfHour(90)).toBe(15);
+  });
+  it('180° → dakika 30', () => {
+    expect(angleToMinuteOfHour(180)).toBe(30);
+  });
+  it('270° → dakika 45', () => {
+    expect(angleToMinuteOfHour(270)).toBe(45);
+  });
+  it('359° → 60 taşar, 0\'a sarar', () => {
+    expect(angleToMinuteOfHour(359.5)).toBe(0);
+  });
+});
+
+describe('shortestMinuteDelta', () => {
+  it('küçük ileri fark olduğu gibi döner', () => {
+    expect(shortestMinuteDelta(10, 15)).toBe(5);
+  });
+  it('küçük geri fark negatif döner', () => {
+    expect(shortestMinuteDelta(15, 10)).toBe(-5);
+  });
+  it('saat sınırını sararak en kısa yolu bulur (55 → 5 = +10, -50 değil)', () => {
+    expect(shortestMinuteDelta(55, 5)).toBe(10);
+  });
+  it('ters yönde sarma (5 → 55 = -10, +50 değil)', () => {
+    expect(shortestMinuteDelta(5, 55)).toBe(-10);
+  });
+  it('sonuç her zaman [-30, 30] aralığında', () => {
+    for (let base = 0; base < 60; base += 7) {
+      for (let target = 0; target < 60; target += 7) {
+        const delta = shortestMinuteDelta(base, target);
+        expect(delta).toBeGreaterThanOrEqual(-30);
+        expect(delta).toBeLessThanOrEqual(30);
+      }
+    }
   });
 });
