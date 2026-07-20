@@ -1,5 +1,5 @@
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import { useState } from 'react';
+import { forwardRef, useImperativeHandle, useState } from 'react';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/atoms';
@@ -9,6 +9,11 @@ import { spacing, useTheme } from '@/theme';
 export interface DigitalTimePickerProps {
   value: Date;
   onChange: (date: Date) => void;
+}
+
+/** Ekranın alt tarafındaki ayrı "Set Alarm" butonundan da açılabilmesi için. */
+export interface DigitalTimePickerHandle {
+  open: () => void;
 }
 
 /**
@@ -23,66 +28,73 @@ export interface DigitalTimePickerProps {
  * kullanıcı OK/Cancel'a basınca kapanır (onChange event.type ile ayırt edilir).
  * iOS: `display="spinner"` ile inline gösterilir, ekranda ayrıca bir
  * "Set Alarm" butonu vardır (spinner'ın kendi onay butonu yoktur).
+ *
+ * `open()`, dijital saate dokunmanın yanı sıra dışarıdan (ör. ekranın altındaki
+ * ayrı bir "Set Alarm" butonu) da tetiklenebilsin diye ref ile dışa açılır.
  */
-export function DigitalTimePicker({ value, onChange }: DigitalTimePickerProps) {
-  const { colors } = useTheme();
-  const [pickerOpen, setPickerOpen] = useState(false);
-  const [pendingValue, setPendingValue] = useState(value);
+export const DigitalTimePicker = forwardRef<DigitalTimePickerHandle, DigitalTimePickerProps>(
+  function DigitalTimePicker({ value, onChange }, ref) {
+    const { colors } = useTheme();
+    const [pickerOpen, setPickerOpen] = useState(false);
+    const [pendingValue, setPendingValue] = useState(value);
 
-  function open() {
-    setPendingValue(value);
-    setPickerOpen(true);
-  }
+    function open() {
+      setPendingValue(value);
+      setPickerOpen(true);
+    }
 
-  function handleAndroidChange(event: DateTimePickerEvent, date?: Date) {
-    setPickerOpen(false);
-    if (event.type === 'set' && date) onChange(date);
-  }
+    useImperativeHandle(ref, () => ({ open }));
 
-  function handleIosChange(_event: DateTimePickerEvent, date?: Date) {
-    if (date) setPendingValue(date);
-  }
+    function handleAndroidChange(event: DateTimePickerEvent, date?: Date) {
+      setPickerOpen(false);
+      if (event.type === 'set' && date) onChange(date);
+    }
 
-  function confirmIos() {
-    onChange(pendingValue);
-    setPickerOpen(false);
-  }
+    function handleIosChange(_event: DateTimePickerEvent, date?: Date) {
+      if (date) setPendingValue(date);
+    }
 
-  return (
-    <>
-      <Pressable onPress={open} accessibilityRole="button" style={styles.container}>
-        <DigitalClock time={value} format="12h" />
-      </Pressable>
+    function confirmIos() {
+      onChange(pendingValue);
+      setPickerOpen(false);
+    }
 
-      {pickerOpen && Platform.OS === 'android' ? (
-        <DateTimePicker
-          value={value}
-          mode="time"
-          is24Hour={false}
-          display="default"
-          onChange={handleAndroidChange}
-          positiveButton={{ label: 'Set Alarm' }}
-          negativeButton={{ label: 'Cancel' }}
-        />
-      ) : null}
+    return (
+      <>
+        <Pressable onPress={open} accessibilityRole="button" style={styles.container}>
+          <DigitalClock time={value} format="12h" />
+        </Pressable>
 
-      {pickerOpen && Platform.OS === 'ios' ? (
-        <View style={styles.iosPicker}>
+        {pickerOpen && Platform.OS === 'android' ? (
           <DateTimePicker
-            value={pendingValue}
+            value={value}
             mode="time"
             is24Hour={false}
-            display="spinner"
-            themeVariant="dark"
-            onChange={handleIosChange}
-            textColor={colors.textPrimary}
+            display="default"
+            onChange={handleAndroidChange}
+            positiveButton={{ label: 'Set Alarm' }}
+            negativeButton={{ label: 'Cancel' }}
           />
-          <Button title="Set Alarm" onPress={confirmIos} style={styles.confirmButton} />
-        </View>
-      ) : null}
-    </>
-  );
-}
+        ) : null}
+
+        {pickerOpen && Platform.OS === 'ios' ? (
+          <View style={styles.iosPicker}>
+            <DateTimePicker
+              value={pendingValue}
+              mode="time"
+              is24Hour={false}
+              display="spinner"
+              themeVariant="dark"
+              onChange={handleIosChange}
+              textColor={colors.textPrimary}
+            />
+            <Button title="Set Alarm" onPress={confirmIos} style={styles.confirmButton} />
+          </View>
+        ) : null}
+      </>
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   container: {

@@ -1,11 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText, Button, Heading } from '@/components/atoms';
-import { DigitalTimePicker, TaskAssignmentPanel } from '@/components/organisms';
+import {
+  DigitalTimePicker,
+  TaskAssignmentPanel,
+  type DigitalTimePickerHandle,
+} from '@/components/organisms';
 import { prayers, type PrayerId, type TaskId } from '../../design/tokens';
 import { computeOffsetMinutes, getPickerBaseTime } from '@/services/scheduleHelpers';
 import { useAlarmsStore, usePrayerStore } from '@/stores';
@@ -30,6 +34,7 @@ function AlarmSetupContent() {
   const [selectedPrayer, setSelectedPrayer] = useState<PrayerId>('fajr');
   const [offsetMinutes, setOffsetMinutes] = useState(0);
   const [taskIds, setTaskIds] = useState<TaskId[]>([]);
+  const timePickerRef = useRef<DigitalTimePickerHandle>(null);
 
   // Vaktin taban zamanı yalnız seçilen vakit/vakitler değişince yeniden hesaplanır;
   // "now" burada sabit tutulur ki dijital saatteki her seçim baz zamanı kaydırmasın.
@@ -77,7 +82,7 @@ function AlarmSetupContent() {
           <AppText variant="bodySmall" color="textSecondary" style={styles.prayerLabel}>
             {prayers[selectedPrayer].title}
           </AppText>
-          <DigitalTimePicker value={displayTime} onChange={changeTime} />
+          <DigitalTimePicker ref={timePickerRef} value={displayTime} onChange={changeTime} />
 
           <View style={styles.chips}>
             {PRAYER_IDS.map((id) => {
@@ -107,6 +112,12 @@ function AlarmSetupContent() {
         <TaskAssignmentPanel selectedTaskIds={taskIds} onToggleTask={toggleTask} />
       </ScrollView>
 
+      <Button
+        title="Set Alarm"
+        variant="secondary"
+        onPress={() => timePickerRef.current?.open()}
+        style={styles.setAlarm}
+      />
       <Button title="Save Alarm" onPress={save} style={styles.save} />
     </SafeAreaView>
   );
@@ -154,8 +165,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     alignSelf: 'flex-start',
   },
-  save: {
+  setAlarm: {
     marginTop: spacing.md,
+    alignSelf: 'stretch',
+  },
+  save: {
+    marginTop: spacing.sm,
     alignSelf: 'stretch',
   },
 });
