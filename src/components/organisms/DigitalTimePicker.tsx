@@ -4,6 +4,7 @@ import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/atoms';
 import { DigitalClock } from '@/components/molecules';
+import { useTranslation } from '@/i18n';
 import { spacing, useTheme } from '@/theme';
 
 export interface DigitalTimePickerProps {
@@ -35,6 +36,7 @@ export interface DigitalTimePickerHandle {
 export const DigitalTimePicker = forwardRef<DigitalTimePickerHandle, DigitalTimePickerProps>(
   function DigitalTimePicker({ value, onChange }, ref) {
     const { colors } = useTheme();
+    const t = useTranslation();
     const [pickerOpen, setPickerOpen] = useState(false);
     const [pendingValue, setPendingValue] = useState(value);
 
@@ -72,8 +74,8 @@ export const DigitalTimePicker = forwardRef<DigitalTimePickerHandle, DigitalTime
             is24Hour={false}
             display="default"
             onChange={handleAndroidChange}
-            positiveButton={{ label: 'Set Alarm' }}
-            negativeButton={{ label: 'Cancel' }}
+            positiveButton={{ label: t.digitalTimePicker.setAlarm }}
+            negativeButton={{ label: t.digitalTimePicker.cancel }}
           />
         ) : null}
 
@@ -88,7 +90,7 @@ export const DigitalTimePicker = forwardRef<DigitalTimePickerHandle, DigitalTime
               onChange={handleIosChange}
               textColor={colors.textPrimary}
             />
-            <Button title="Set Alarm" onPress={confirmIos} style={styles.confirmButton} />
+            <Button title={t.digitalTimePicker.setAlarm} onPress={confirmIos} style={styles.confirmButton} />
           </View>
         ) : null}
       </>

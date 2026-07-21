@@ -3,6 +3,7 @@ import { Pressable, StyleSheet } from 'react-native';
 
 import { AppText } from '@/components/atoms';
 import type { TaskDef } from '../../../design/tokens';
+import { useTranslation } from '@/i18n';
 import { radius, spacing, useTheme } from '@/theme';
 
 const ICONS: Record<TaskDef['icon'], keyof typeof Ionicons.glyphMap> = {
@@ -20,6 +21,7 @@ export interface TaskChipProps {
 
 export function TaskChip({ task, locked, selected, onPress }: TaskChipProps) {
   const { colors } = useTheme();
+  const t = useTranslation();
 
   return (
     <Pressable
@@ -35,7 +37,7 @@ export function TaskChip({ task, locked, selected, onPress }: TaskChipProps) {
     >
       <Ionicons name={ICONS[task.icon]} size={13} color={colors.textSecondary} />
       <AppText variant="caption" color="textSecondary">
-        {task.title}
+        {t.tasks[task.id]}
       </AppText>
       {locked ? <Ionicons name="lock-closed-outline" size={11} color={colors.textSecondary} /> : null}
     </Pressable>

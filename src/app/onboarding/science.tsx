@@ -6,19 +6,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText, Button, Heading } from '@/components/atoms';
 import { OnboardingFooter } from '@/components/molecules';
 import { SleepScienceChart } from '@/components/organisms';
+import { useTranslation } from '@/i18n';
 import { useSettingsStore } from '@/stores';
 import { spacing, useTheme } from '@/theme';
-
-const benefits: { icon: keyof typeof Ionicons.glyphMap; text: string }[] = [
-  { icon: 'moon-outline', text: 'Lower ambient noise allows deeper cognitive processing.' },
-  { icon: 'partly-sunny-outline', text: 'A natural alertness spike arrives with the dawn.' },
-  { icon: 'leaf-outline', text: 'Quiet mornings foster a meditative state for prayer.' },
-];
 
 export default function OnboardingScienceScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const t = useTranslation();
   const setOnboardingDone = useSettingsStore((s) => s.setOnboardingDone);
+  const benefits: { icon: keyof typeof Ionicons.glyphMap; text: string }[] = [
+    { icon: 'moon-outline', text: t.onboarding.science.benefit1 },
+    { icon: 'partly-sunny-outline', text: t.onboarding.science.benefit2 },
+    { icon: 'leaf-outline', text: t.onboarding.science.benefit3 },
+  ];
 
   function skip() {
     setOnboardingDone(true);
@@ -28,9 +29,9 @@ export default function OnboardingScienceScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.content}>
-        <Heading variant="h1">Your brain at dawn</Heading>
+        <Heading variant="h1">{t.onboarding.science.title}</Heading>
         <AppText color="textSecondary" style={styles.subtitle}>
-          The pre-dawn hours offer a unique state primed for focus and spiritual connection.
+          {t.onboarding.science.subtitle}
         </AppText>
         <View style={styles.chartGap}>
           <SleepScienceChart />
@@ -48,7 +49,7 @@ export default function OnboardingScienceScreen() {
       </View>
       <View style={styles.footer}>
         <Button
-          title="See How It Works"
+          title={t.onboarding.science.cta}
           variant="secondary"
           onPress={() => router.push('/onboarding/permissions')}
         />

@@ -7,7 +7,8 @@ import { Alert, BackHandler, Platform, Pressable, StyleSheet, Vibration, View } 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText, Button, Heading } from '@/components/atoms';
-import { prayers, tasks, type TaskId } from '../../design/tokens';
+import { tasks, type TaskId } from '../../design/tokens';
+import { useTranslation } from '@/i18n';
 import { completeDay, giveUp } from '@/services/StreakEngine';
 import { useAlarmsStore, useRingStore, useStreakStore } from '@/stores';
 import { ForcedThemeProvider, radius, spacing, useTheme } from '@/theme';
@@ -41,6 +42,7 @@ export default function AlarmRingScreen() {
 function AlarmRingContent() {
   const router = useRouter();
   const { colors } = useTheme();
+  const t = useTranslation();
   const { alarmId } = useLocalSearchParams<{ alarmId?: string }>();
   const alarm = useAlarmsStore((s) => s.alarms.find((a) => a.id === alarmId));
   const completedTaskIds = useRingStore((s) => s.completedTaskIds);
@@ -89,8 +91,8 @@ function AlarmRingContent() {
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <StatusBar hidden />
         <View style={styles.centerFill}>
-          <AppText color="textSecondary">This alarm no longer exists.</AppText>
-          <Button title="Go Home" onPress={finishRing} style={styles.fullWidth} />
+          <AppText color="textSecondary">{t.alarmRing.alarmGone}</AppText>
+          <Button title={t.alarmRing.goHome} onPress={finishRing} style={styles.fullWidth} />
         </View>
       </SafeAreaView>
     );
@@ -104,7 +106,7 @@ function AlarmRingContent() {
   const hours24 = now.getHours();
   const hours12 = hours24 % 12 === 0 ? 12 : hours24 % 12;
   const clock = `${hours12}:${String(now.getMinutes()).padStart(2, '0')}`;
-  const meridiem = hours24 < 12 ? 'AM' : 'PM';
+  const meridiem = hours24 < 12 ? t.common.am : t.common.pm;
 
   function startNextTask() {
     if (!nextTask) return;
@@ -115,14 +117,11 @@ function AlarmRingContent() {
   }
 
   function confirmGiveUp() {
-    const message =
-      freezes > 0
-        ? 'One streak freeze (−1 ❄) will be spent.'
-        : 'You have no freezes left — your streak will reset to 0.';
-    Alert.alert('Give up?', message, [
-      { text: 'Keep Trying', style: 'cancel' },
+    const message = freezes > 0 ? t.alarmRing.giveUpConfirmFreezeMsg : t.alarmRing.giveUpConfirmNoFreezeMsg;
+    Alert.alert(t.alarmRing.giveUpConfirmTitle, message, [
+      { text: t.alarmRing.keepTrying, style: 'cancel' },
       {
-        text: 'Give Up',
+        text: t.alarmRing.giveUp,
         style: 'destructive',
         onPress: () => {
           giveUp();
@@ -146,7 +145,7 @@ function AlarmRingContent() {
           </AppText>
         </View>
         <Heading variant="h2" style={styles.center}>
-          {prayers[alarm.prayerId].alarmMessage}
+          {t.prayers[alarm.prayerId].alarmMessage}
         </Heading>
       </View>
 
@@ -173,7 +172,7 @@ function AlarmRingContent() {
                 color={featured ? colors.accent : colors.secondary}
               />
               <AppText variant={featured ? 'body' : 'bodySmall'} style={styles.taskTitle}>
-                {task.title}
+                {t.tasks[task.id]}
               </AppText>
               {done ? <Ionicons name="checkmark-circle" size={20} color={colors.success} /> : null}
             </View>
@@ -181,17 +180,21 @@ function AlarmRingContent() {
         })}
         {assignedTasks.length === 0 ? (
           <AppText color="textSecondary" style={styles.center}>
-            No task assigned to this alarm.
+            {t.alarmRing.noTaskAssigned}
           </AppText>
         ) : null}
       </View>
 
       <View style={styles.actions}>
         {nextTask ? (
-          <Button title={`Start Task — ${nextTask.title}`} onPress={startNextTask} style={styles.fullWidth} />
+          <Button
+            title={t.alarmRing.startTask(t.tasks[nextTask.id])}
+            onPress={startNextTask}
+            style={styles.fullWidth}
+          />
         ) : (
           <Button
-            title="Dismiss Alarm"
+            title={t.alarmRing.dismissAlarm}
             onPress={() => {
               // Gün kredisi yalnız en az bir görev gerçekten tamamlandıysa yazılır
               // (görevsiz alarmı kapatmak seri saymaz — seri görev disiplinidir).
@@ -204,7 +207,7 @@ function AlarmRingContent() {
         {nextTask ? (
           <Pressable onPress={confirmGiveUp} accessibilityRole="button" style={styles.giveUpRow}>
             <AppText variant="bodySmall" color="textSecondary">
-              Give Up
+              {t.alarmRing.giveUp}
             </AppText>
             <AppText variant="bodySmall" style={{ color: colors.ice }}>
               −1

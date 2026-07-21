@@ -6,12 +6,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { AppText, Heading } from '@/components/atoms';
 import { TaskAssignmentPanel } from '@/components/organisms';
 import type { TaskId } from '../../design/tokens';
+import { useTranslation } from '@/i18n';
 import { useAlarmsStore } from '@/stores';
 import { spacing, useTheme } from '@/theme';
 
 export default function TaskPickerScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const t = useTranslation();
   const params = useLocalSearchParams<{ alarmId: string }>();
   const alarm = useAlarmsStore((s) => s.alarms.find((a) => a.id === params.alarmId));
   const setAlarmTasks = useAlarmsStore((s) => s.setAlarmTasks);
@@ -19,7 +21,7 @@ export default function TaskPickerScreen() {
   if (!alarm) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-        <AppText color="textSecondary">Alarm not found.</AppText>
+        <AppText color="textSecondary">{t.taskPicker.alarmNotFound}</AppText>
       </SafeAreaView>
     );
   }
@@ -38,7 +40,7 @@ export default function TaskPickerScreen() {
         <Pressable onPress={() => router.back()} accessibilityRole="button">
           <Ionicons name="close" size={22} color={colors.textSecondary} />
         </Pressable>
-        <Heading variant="h2">Assign Tasks</Heading>
+        <Heading variant="h2">{t.taskPicker.assignTasks}</Heading>
         <View style={styles.headerSpacer} />
       </View>
 

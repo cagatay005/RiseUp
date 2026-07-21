@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/atoms';
 import { tasks, type TaskId } from '../../../design/tokens';
+import { useTranslation } from '@/i18n';
 import { usePremiumStore } from '@/stores';
 import { radius, spacing, useTheme } from '@/theme';
 
@@ -26,6 +27,7 @@ export interface TaskAssignmentPanelProps {
 export function TaskAssignmentPanel({ selectedTaskIds, onToggleTask }: TaskAssignmentPanelProps) {
   const { colors } = useTheme();
   const router = useRouter();
+  const t = useTranslation();
   const isPremium = usePremiumStore((s) => s.isPremium);
 
   return (
@@ -49,7 +51,7 @@ export function TaskAssignmentPanel({ selectedTaskIds, onToggleTask }: TaskAssig
           >
             <Ionicons name={ICONS[task.icon]} size={22} color={colors.secondary} />
             <AppText variant="bodySmall" style={styles.cardTitle}>
-              {task.title}
+              {t.tasks[task.id]}
             </AppText>
             {locked ? (
               <Ionicons name="lock-closed-outline" size={16} color={colors.textSecondary} />

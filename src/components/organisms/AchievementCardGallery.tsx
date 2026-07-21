@@ -3,19 +3,14 @@ import { useRef, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 
 import { AppText, Button, Heading } from '@/components/atoms';
+import { useTranslation } from '@/i18n';
 import { captureCard, saveCardToGallery, shareCard } from '@/services/CardRenderer';
-import { MONTH_NAMES } from '@/services/scheduleHelpers';
 import { recordCardShared } from '@/services/StreakEngine';
 import type { AchievementCard } from '@/stores/streakStore';
 import { radius, spacing, useTheme } from '@/theme';
 
 const CARD_WIDTH = 200;
 const CARD_GAP = 16; // spacing.md — snap hesabında sabit sayı gerektiği için ayrık tutuldu.
-
-function formatCardDate(iso: string): string {
-  const d = new Date(iso);
-  return `${MONTH_NAMES[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
-}
 
 export interface AchievementCardGalleryProps {
   cards: AchievementCard[];
@@ -29,6 +24,7 @@ export interface AchievementCardGalleryProps {
  */
 export function AchievementCardGallery({ cards }: AchievementCardGalleryProps) {
   const { colors } = useTheme();
+  const t = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
   const [busy, setBusy] = useState<'save' | 'share' | null>(null);
   const cardRefs = useRef(new Map<string, View>());
@@ -38,7 +34,7 @@ export function AchievementCardGallery({ cards }: AchievementCardGalleryProps) {
       <View style={styles.empty}>
         <Ionicons name="ribbon-outline" size={32} color={colors.textSecondary} />
         <AppText color="textSecondary" style={styles.center}>
-          Complete a 15-day streak or a verse recitation to earn your first card.
+          {t.trophies.emptyState}
         </AppText>
       </View>
     );
@@ -56,14 +52,12 @@ export function AchievementCardGallery({ cards }: AchievementCardGalleryProps) {
       if (ok && action === 'share') recordCardShared();
       if (!ok) {
         Alert.alert(
-          action === 'save' ? 'Permission needed' : 'Sharing unavailable',
-          action === 'save'
-            ? 'Allow photo access to save your achievement card.'
-            : 'Sharing is not available on this device.',
+          action === 'save' ? t.trophies.permissionNeededTitle : t.trophies.sharingUnavailableTitle,
+          action === 'save' ? t.trophies.permissionNeededBody : t.trophies.sharingUnavailableBody,
         );
       }
     } catch {
-      Alert.alert('Something went wrong', 'Could not process the card image.');
+      Alert.alert(t.trophies.genericErrorTitle, t.trophies.genericErrorBody);
     } finally {
       setBusy(null);
     }
@@ -104,11 +98,11 @@ export function AchievementCardGallery({ cards }: AchievementCardGalleryProps) {
                 {card.value}
               </AppText>
               <Heading variant="h2" style={styles.cardTitle}>
-                {card.title}
+                {card.type === 'streak' ? t.trophies.streakCardTitle(card.value) : card.title}
               </Heading>
             </View>
             <AppText variant="caption" color="textSecondary">
-              {formatCardDate(card.earnedAt)}
+              {t.common.formatLongDate(new Date(card.earnedAt))}
             </AppText>
           </View>
         ))}
@@ -116,14 +110,14 @@ export function AchievementCardGallery({ cards }: AchievementCardGalleryProps) {
 
       <View style={styles.actions}>
         <Button
-          title="Save"
+          title={t.trophies.save}
           variant="secondary"
           onPress={() => void handleAction('save')}
           disabled={busy !== null}
           style={styles.actionButton}
         />
         <Button
-          title="Share"
+          title={t.trophies.share}
           onPress={() => void handleAction('share')}
           disabled={busy !== null}
           style={styles.actionButton}

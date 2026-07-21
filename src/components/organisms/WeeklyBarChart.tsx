@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, View, type LayoutChangeEvent } from 'react-nati
 
 import { AppText } from '@/components/atoms';
 import { PrayerTimeStrip } from '@/components/molecules';
+import { useTranslation } from '@/i18n';
 import {
   dayKeyOf,
   formatWeekRangeLabel,
@@ -32,6 +33,7 @@ export interface WeeklyBarChartProps {
  */
 export function WeeklyBarChart({ dayLog }: WeeklyBarChartProps) {
   const { colors } = useTheme();
+  const t = useTranslation();
   const todayTimes = usePrayerStore((s) => s.todayTimes);
   const scrollRef = useRef<ScrollView>(null);
   const [width, setWidth] = useState(0);
@@ -110,7 +112,7 @@ export function WeeklyBarChart({ dayLog }: WeeklyBarChartProps) {
       ) : null}
 
       <AppText variant="caption" color="textSecondary" style={styles.legend}>
-        Full bar = day completed
+        {t.stats.legend}
       </AppText>
       <View style={styles.dots}>
         {weekStarts.map((weekStart, i) => (
@@ -128,11 +130,14 @@ export function WeeklyBarChart({ dayLog }: WeeklyBarChartProps) {
 }
 
 function WeekPageHeader({ weekStart, today }: { weekStart: Date; today: Date }) {
+  const t = useTranslation();
   return (
     <View style={styles.heading}>
-      <AppText variant="body">{formatWeekRangeLabel(weekStart, today)}</AppText>
+      <AppText variant="body">
+        {formatWeekRangeLabel(weekStart, today, t.stats.thisWeek, t.common.formatWeekRange)}
+      </AppText>
       <AppText variant="caption" color="textSecondary">
-        Swipe left for past weeks
+        {t.stats.swipeHint}
       </AppText>
     </View>
   );

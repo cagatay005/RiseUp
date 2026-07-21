@@ -109,11 +109,17 @@ describe('getPickerBaseTime', () => {
   });
 });
 
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+const formatMonthDay = (date: Date) => `${MONTH_NAMES[date.getMonth()]} ${date.getDate()}`;
+
 describe('formatMissedDate', () => {
-  it('"YYYY-MM-DD" → "Missed {Month} {day}"', () => {
-    expect(formatMissedDate('2026-07-17')).toBe('Missed July 17');
-    expect(formatMissedDate('2026-01-05')).toBe('Missed January 5');
-    expect(formatMissedDate('2026-12-31')).toBe('Missed December 31');
+  it('"YYYY-MM-DD" → "{Month} {day}" (i18n formatMonthDay ile biçimlenir)', () => {
+    expect(formatMissedDate('2026-07-17', formatMonthDay)).toBe('July 17');
+    expect(formatMissedDate('2026-01-05', formatMonthDay)).toBe('January 5');
+    expect(formatMissedDate('2026-12-31', formatMonthDay)).toBe('December 31');
   });
 });
 

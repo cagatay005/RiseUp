@@ -8,6 +8,7 @@ import { AppText, Button, Heading } from '@/components/atoms';
 import { QuoteBlock } from '@/components/molecules';
 import { CompassDial } from '@/components/organisms';
 import { useQiblaHold } from '@/hooks/useQiblaHold';
+import { useTranslation } from '@/i18n';
 import { getDailyQuote } from '@/services/QuoteService';
 import { recordQiblaCompletion } from '@/services/StreakEngine';
 import { usePrayerStore, useRingStore } from '@/stores';
@@ -16,6 +17,7 @@ import { rules, spacing, useTheme } from '@/theme';
 export default function QiblaTaskScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const t = useTranslation();
   const location = usePrayerStore((s) => s.location);
   const quote = useMemo(() => getDailyQuote(), []);
   const { bearing, heading, aligned, done, secondsRemaining } = useQiblaHold(location);
@@ -32,15 +34,15 @@ export default function QiblaTaskScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <Heading variant="h2" style={styles.center}>Rotate your phone to find Qibla</Heading>
+      <Heading variant="h2" style={styles.center}>{t.qiblaTask.title}</Heading>
       <AppText color="textSecondary" style={styles.center}>
-        Hold your phone in the right direction for {rules.qiblaHoldSeconds} seconds
+        {t.qiblaTask.instructions(rules.qiblaHoldSeconds)}
       </AppText>
       <View style={styles.dial}>
         {bearing === null ? (
           <View style={[styles.unavailable, { borderColor: colors.border }]}>
             <Ionicons name="location-outline" size={26} color={colors.secondary} />
-            <AppText color="textSecondary">Location is needed to calculate Qibla.</AppText>
+            <AppText color="textSecondary">{t.qiblaTask.locationNeeded}</AppText>
           </View>
         ) : <CompassDial heading={heading} targetBearing={bearing} aligned={aligned} />}
       </View>
@@ -48,7 +50,7 @@ export default function QiblaTaskScreen() {
         {secondsRemaining}
       </AppText>
       <QuoteBlock text={quote.text} compact />
-      <Button title="Cancel task" variant="ghost" onPress={() => router.back()} />
+      <Button title={t.qiblaTask.cancelTask} variant="ghost" onPress={() => router.back()} />
     </SafeAreaView>
   );
 }

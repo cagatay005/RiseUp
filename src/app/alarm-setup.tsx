@@ -10,7 +10,8 @@ import {
   TaskAssignmentPanel,
   type DigitalTimePickerHandle,
 } from '@/components/organisms';
-import { prayers, type PrayerId, type TaskId } from '../../design/tokens';
+import { type PrayerId, type TaskId } from '../../design/tokens';
+import { useTranslation } from '@/i18n';
 import { computeOffsetMinutes, getPickerBaseTime } from '@/services/scheduleHelpers';
 import { useAlarmsStore, usePrayerStore } from '@/stores';
 import { ForcedThemeProvider, radius, spacing, useTheme } from '@/theme';
@@ -28,6 +29,7 @@ export default function AlarmSetupScreen() {
 function AlarmSetupContent() {
   const router = useRouter();
   const { colors } = useTheme();
+  const t = useTranslation();
   const addAlarm = useAlarmsStore((s) => s.addAlarm);
   const todayTimes = usePrayerStore((s) => s.todayTimes);
 
@@ -73,14 +75,14 @@ function AlarmSetupContent() {
         <Pressable onPress={() => router.back()} accessibilityRole="button">
           <Ionicons name="close" size={22} color={colors.textSecondary} />
         </Pressable>
-        <Heading variant="h2">New Alarm</Heading>
+        <Heading variant="h2">{t.alarmSetup.newAlarm}</Heading>
         <View style={styles.headerSpacer} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.centered}>
           <AppText variant="bodySmall" color="textSecondary" style={styles.prayerLabel}>
-            {prayers[selectedPrayer].title}
+            {t.prayers[selectedPrayer].title}
           </AppText>
           <DigitalTimePicker ref={timePickerRef} value={displayTime} onChange={changeTime} />
 
@@ -99,7 +101,7 @@ function AlarmSetupContent() {
                     },
                   ]}
                 >
-                  <AppText variant="bodySmall">{prayers[id].title}</AppText>
+                  <AppText variant="bodySmall">{t.prayers[id].title}</AppText>
                 </Pressable>
               );
             })}
@@ -107,18 +109,18 @@ function AlarmSetupContent() {
         </View>
 
         <AppText variant="caption" color="textSecondary" style={styles.taskLabel}>
-          TASKS
+          {t.alarmSetup.tasksLabel}
         </AppText>
         <TaskAssignmentPanel selectedTaskIds={taskIds} onToggleTask={toggleTask} />
       </ScrollView>
 
       <Button
-        title="Set Alarm"
+        title={t.alarmSetup.setAlarm}
         variant="secondary"
         onPress={() => timePickerRef.current?.open()}
         style={styles.setAlarm}
       />
-      <Button title="Save Alarm" onPress={save} style={styles.save} />
+      <Button title={t.alarmSetup.saveAlarm} onPress={save} style={styles.save} />
     </SafeAreaView>
   );
 }

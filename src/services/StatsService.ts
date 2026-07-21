@@ -1,4 +1,3 @@
-import { MONTH_NAMES } from './scheduleHelpers';
 import { dayKeyOf } from './StreakEngine';
 import type { DayLog } from '@/stores/streakStore';
 
@@ -74,25 +73,32 @@ export function streakShadeOpacity(streakLength: number): number {
   return Math.min(1, streakLength / 10);
 }
 
-export function formatMonthYear(date: Date): string {
-  return `${MONTH_NAMES[date.getMonth()]} ${date.getFullYear()}`;
-}
-
-const MONTH_ABBR = MONTH_NAMES.map((m) => m.slice(0, 3));
-
-/** "This week" veya "Jul 6 – Jul 12" (mockup ekran 7'deki hafta başlığı). */
-export function formatWeekRangeLabel(weekStart: Date, today: Date): string {
-  if (dayKeyOf(weekStart) === dayKeyOf(startOfWeekMonday(today))) return 'This week';
+/**
+ * Bugünün haftasıysa `thisWeekLabel`, değilse `formatRange` ile biçimlenmiş
+ * aralık (mockup ekran 7'deki hafta başlığı, ör. "Jul 6 – Jul 12"). Asıl
+ * biçimlendirme çağıran taraftan (t.common.formatWeekRange) gelir ki her dil
+ * kendi ay adı/sırasını kullanabilsin.
+ */
+export function formatWeekRangeLabel(
+  weekStart: Date,
+  today: Date,
+  thisWeekLabel: string,
+  formatRange: (start: Date, end: Date) => string,
+): string {
+  if (dayKeyOf(weekStart) === dayKeyOf(startOfWeekMonday(today))) return thisWeekLabel;
   const end = new Date(weekStart);
   end.setDate(end.getDate() + 6);
-  return `${MONTH_ABBR[weekStart.getMonth()]} ${weekStart.getDate()} – ${MONTH_ABBR[end.getMonth()]} ${end.getDate()}`;
+  return formatRange(weekStart, end);
 }
 
-/** "82% success since May 3" alt satırı; hiç başlanmadıysa "today". */
-export function formatSince(startedAt: string | null): string {
-  if (!startedAt) return 'today';
-  const d = new Date(startedAt);
-  return `${MONTH_NAMES[d.getMonth()]} ${d.getDate()}`;
+/** "82% success since May 3" alt satırındaki tarih kısmı; hiç başlanmadıysa `todayLabel`. */
+export function formatSince(
+  startedAt: string | null,
+  formatMonthDay: (date: Date) => string,
+  todayLabel: string,
+): string {
+  if (!startedAt) return todayLabel;
+  return formatMonthDay(new Date(startedAt));
 }
 
 export { dayKeyOf };

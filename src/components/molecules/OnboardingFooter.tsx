@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText, Dot } from '@/components/atoms';
+import { useTranslation } from '@/i18n';
 import { spacing } from '@/theme';
 
 export interface OnboardingFooterProps {
@@ -10,11 +11,12 @@ export interface OnboardingFooterProps {
 }
 
 export function OnboardingFooter({ activeIndex, total, onSkip }: OnboardingFooterProps) {
+  const t = useTranslation();
   return (
     <View style={styles.row}>
       <Pressable onPress={onSkip} accessibilityRole="button" hitSlop={8}>
         <AppText variant="bodySmall" color="textSecondary">
-          Skip
+          {t.onboarding.skip}
         </AppText>
       </Pressable>
       <View style={styles.dots}>

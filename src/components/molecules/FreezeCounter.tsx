@@ -3,10 +3,12 @@ import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText, Button } from '@/components/atoms';
+import { useTranslation } from '@/i18n';
 import { radius, spacing, useTheme } from '@/theme';
 
 export function FreezeCounter({ freezes }: { freezes: number }) {
   const { colors } = useTheme();
+  const t = useTranslation();
   const [open, setOpen] = useState(false);
 
   return (
@@ -27,13 +29,12 @@ export function FreezeCounter({ freezes }: { freezes: number }) {
           <Pressable style={[styles.sheet, { backgroundColor: colors.surface }]}>
             <Ionicons name="snow-outline" size={28} color={colors.ice} />
             <AppText variant="h2" style={styles.title}>
-              Streak freezes
+              {t.freezeCounter.title}
             </AppText>
             <AppText color="textSecondary" style={styles.body}>
-              Every 7-day streak earns you one freeze. Spend a freeze to skip a prayer
-              without breaking your streak — Give Up on an alarm costs one too.
+              {t.freezeCounter.body}
             </AppText>
-            <Button title="Got it" onPress={() => setOpen(false)} style={styles.close} />
+            <Button title={t.freezeCounter.gotIt} onPress={() => setOpen(false)} style={styles.close} />
           </Pressable>
         </Pressable>
       </Modal>

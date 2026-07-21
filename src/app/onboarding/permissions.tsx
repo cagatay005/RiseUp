@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText, Button, Heading } from '@/components/atoms';
 import { OnboardingFooter, PermissionRow } from '@/components/molecules';
+import { useTranslation } from '@/i18n';
 import { openSystemSettings, requestNotificationPermission } from '@/services/PermissionsService';
 import { requestLocationPermission } from '@/services/PrayerTimesService';
 import { useSettingsStore } from '@/stores';
@@ -13,6 +14,7 @@ import { spacing, useTheme } from '@/theme';
 export default function OnboardingPermissionsScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const t = useTranslation();
   const setOnboardingDone = useSettingsStore((s) => s.setOnboardingDone);
   const snapshot = useSettingsStore((s) => s.permissionsSnapshot);
   const [attempted, setAttempted] = useState(false);
@@ -55,30 +57,32 @@ export default function OnboardingPermissionsScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.content}>
-        <Heading variant="h1">Two permissions, one habit</Heading>
+        <Heading variant="h1">{t.onboarding.permissions.title}</Heading>
         <View style={styles.rows}>
           <PermissionRow
             icon="location-outline"
-            title="Location Access"
-            subtitle="To calculate prayer times for your city"
+            title={t.onboarding.permissions.locationTitle}
+            subtitle={t.onboarding.permissions.locationSubtitle}
             status={snapshot.location}
             onPress={handleLocationPress}
           />
           <PermissionRow
             icon="notifications-outline"
-            title="Notifications & Critical Alerts"
-            subtitle="So your alarm rings even in silent mode"
+            title={t.onboarding.permissions.notifTitle}
+            subtitle={t.onboarding.permissions.notifSubtitle}
             status={snapshot.notifications}
             onPress={handleNotificationsPress}
           />
         </View>
         <AppText variant="caption" color="textSecondary" style={styles.reason}>
-          RiseUp uses your location only to compute prayer times on your device. Critical
-          alerts let your alarm break through silent mode. Nothing leaves your phone.
+          {t.onboarding.permissions.reason}
         </AppText>
       </View>
       <View style={styles.footer}>
-        <Button title={canContinue ? 'Continue' : 'Grant Permissions'} onPress={handlePrimaryPress} />
+        <Button
+          title={canContinue ? t.onboarding.permissions.continueButton : t.onboarding.permissions.grantButton}
+          onPress={handlePrimaryPress}
+        />
         <OnboardingFooter activeIndex={2} total={4} onSkip={skip} />
       </View>
     </SafeAreaView>

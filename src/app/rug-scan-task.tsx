@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText, Button, Heading } from '@/components/atoms';
 import { QuoteBlock } from '@/components/molecules';
+import { useTranslation } from '@/i18n';
 import { getDailyQuote } from '@/services/QuoteService';
 import { usePremiumStore, useRingStore } from '@/stores';
 import { radius, spacing, useTheme } from '@/theme';
@@ -15,6 +16,7 @@ export default function RugScanTaskScreen() {
   const router = useRouter();
   const { alarmId } = useLocalSearchParams<{ alarmId?: string }>();
   const { colors } = useTheme();
+  const t = useTranslation();
   const isPremium = usePremiumStore((s) => s.isPremium);
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
@@ -35,10 +37,10 @@ export default function RugScanTaskScreen() {
         useRingStore.getState().completeTask('rugScan');
         router.back();
       } else {
-        Alert.alert('Try again', 'Move closer and keep the prayer rug clearly visible.');
+        Alert.alert(t.rugScanTask.tryAgainTitle, t.rugScanTask.tryAgainBlurry);
       }
     } catch {
-      Alert.alert('Try again', 'Make sure the prayer rug is clearly visible.');
+      Alert.alert(t.rugScanTask.tryAgainTitle, t.rugScanTask.tryAgainError);
     } finally {
       setCapturing(false);
     }
@@ -49,11 +51,11 @@ export default function RugScanTaskScreen() {
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.premium}>
           <Ionicons name="lock-closed-outline" size={32} color={colors.gold} />
-          <Heading variant="h2">Prayer Rug Scan is Premium</Heading>
-          <AppText color="textSecondary" style={styles.center}>Unlock camera verification and build your streak with every prayer.</AppText>
+          <Heading variant="h2">{t.rugScanTask.premiumTitle}</Heading>
+          <AppText color="textSecondary" style={styles.center}>{t.rugScanTask.premiumBody}</AppText>
           <QuoteBlock text={quote.text} compact />
-          <Button title="Upgrade to Premium" onPress={() => router.push('/premium')} />
-          <Button title="Back to tasks" variant="ghost" onPress={() => router.back()} />
+          <Button title={t.rugScanTask.upgradeButton} onPress={() => router.push('/premium')} />
+          <Button title={t.rugScanTask.backToTasks} variant="ghost" onPress={() => router.back()} />
         </View>
       </SafeAreaView>
     );
@@ -65,9 +67,9 @@ export default function RugScanTaskScreen() {
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.premium}>
           <Ionicons name="camera-outline" size={32} color={colors.secondary} />
-          <Heading variant="h2">Camera access needed</Heading>
-          <AppText color="textSecondary" style={styles.center}>RiseUp only uses the camera to verify your prayer rug.</AppText>
-          <Button title="Grant Camera Access" onPress={() => void requestPermission()} />
+          <Heading variant="h2">{t.rugScanTask.cameraNeededTitle}</Heading>
+          <AppText color="textSecondary" style={styles.center}>{t.rugScanTask.cameraNeededBody}</AppText>
+          <Button title={t.rugScanTask.grantCameraAccess} onPress={() => void requestPermission()} />
           <QuoteBlock text={quote.text} compact />
         </View>
       </SafeAreaView>
@@ -76,8 +78,8 @@ export default function RugScanTaskScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <Heading variant="h2" style={styles.center}>Capture your Prayer Rug</Heading>
-      <AppText color="textSecondary" style={styles.center}>Ensure the patterns or mihrab are clearly visible.</AppText>
+      <Heading variant="h2" style={styles.center}>{t.rugScanTask.captureTitle}</Heading>
+      <AppText color="textSecondary" style={styles.center}>{t.rugScanTask.captureSubtitle}</AppText>
       <View style={[styles.cameraFrame, { borderColor: colors.border }]}>
         <CameraView ref={cameraRef} style={StyleSheet.absoluteFill} facing="back" enableTorch={torch} />
         <Pressable onPress={() => setTorch((on) => !on)} style={[styles.flash, { backgroundColor: colors.surfaceElevated }]} accessibilityRole="button">

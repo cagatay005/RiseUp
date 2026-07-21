@@ -5,8 +5,9 @@ import { Swipeable } from 'react-native-gesture-handler';
 import { AppText } from '@/components/atoms';
 import { tasks, type TaskId } from '../../../design/tokens';
 import type { Alarm } from '@/stores/alarmsStore';
-import { prayers, type PrayerId } from '../../../design/tokens';
+import { type PrayerId } from '../../../design/tokens';
 import { getAlarmClockTime } from '@/services/scheduleHelpers';
+import { useTranslation } from '@/i18n';
 import type { PrayerTimes } from '@/stores/prayerStore';
 import { radius, sizes, spacing, useTheme } from '@/theme';
 import { Toggle } from '@/components/atoms';
@@ -27,8 +28,9 @@ function formatClock(date: Date | null): string {
 
 export function AlarmRow({ alarm, todayTimes, onToggle, onDelete, onPress }: AlarmRowProps) {
   const { colors } = useTheme();
+  const t = useTranslation();
   const clockTime = getAlarmClockTime(alarm, todayTimes);
-  const assignedTasks = tasks.filter((t) => alarm.taskIds.includes(t.id as TaskId));
+  const assignedTasks = tasks.filter((task) => alarm.taskIds.includes(task.id as TaskId));
 
   return (
     <Swipeable
@@ -36,7 +38,7 @@ export function AlarmRow({ alarm, todayTimes, onToggle, onDelete, onPress }: Ala
         <Pressable
           onPress={onDelete}
           accessibilityRole="button"
-          accessibilityLabel="Delete alarm"
+          accessibilityLabel={t.alarmRow.deleteAlarm}
           style={[styles.deleteAction, { backgroundColor: colors.warning }]}
         >
           <Ionicons name="trash-outline" size={20} color="#FFFFFF" />
@@ -53,15 +55,15 @@ export function AlarmRow({ alarm, todayTimes, onToggle, onDelete, onPress }: Ala
               {formatClock(clockTime)}
             </AppText>
             <AppText variant="caption" color="textSecondary">
-              {prayers[alarm.prayerId as PrayerId].title}
+              {t.prayers[alarm.prayerId as PrayerId].title}
             </AppText>
           </View>
           <Toggle value={alarm.enabled} onValueChange={onToggle} />
         </View>
         {assignedTasks.length > 0 ? (
           <View style={styles.chips}>
-            {assignedTasks.map((t) => (
-              <TaskChip key={t.id} task={t} />
+            {assignedTasks.map((task) => (
+              <TaskChip key={task.id} task={task} />
             ))}
           </View>
         ) : null}

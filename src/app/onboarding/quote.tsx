@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BrandMark, Button } from '@/components/atoms';
 import { OnboardingFooter, QuoteBlock } from '@/components/molecules';
+import { useTranslation } from '@/i18n';
 import { getDailyQuote } from '@/services/QuoteService';
 import { useSettingsStore } from '@/stores';
 import { spacing, useTheme } from '@/theme';
@@ -12,6 +13,7 @@ import { spacing, useTheme } from '@/theme';
 export default function OnboardingQuoteScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const t = useTranslation();
   const setOnboardingDone = useSettingsStore((s) => s.setOnboardingDone);
   const quote = useMemo(() => getDailyQuote(), []);
 
@@ -28,7 +30,7 @@ export default function OnboardingQuoteScreen() {
         <QuoteBlock text={quote.text} attribution={quote.attribution} />
       </View>
       <View style={styles.footer}>
-        <Button title="Break the Cycle" onPress={() => router.push('/onboarding/science')} />
+        <Button title={t.onboarding.quote.cta} onPress={() => router.push('/onboarding/science')} />
         <OnboardingFooter activeIndex={0} total={4} onSkip={skip} />
       </View>
     </SafeAreaView>

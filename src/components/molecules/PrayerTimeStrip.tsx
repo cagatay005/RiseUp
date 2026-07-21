@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/atoms';
-import { prayers } from '../../../design/tokens';
+import { useTranslation } from '@/i18n';
 import { PRAYER_IDS_IN_ORDER } from '@/services/PrayerTimesService';
 import { getNextPrayer } from '@/services/scheduleHelpers';
 import type { PrayerTimes } from '@/stores/prayerStore';
@@ -14,6 +14,7 @@ function formatClock(iso: string): string {
 
 /** DESIGN §3.2 sayfa 1: 5 vakit saati, en yakın vakit accent ile vurgulu. */
 export function PrayerTimeStrip({ todayTimes }: { todayTimes: PrayerTimes | null }) {
+  const t = useTranslation();
   if (!todayTimes) return null;
   const next = getNextPrayer(todayTimes, new Date());
 
@@ -25,7 +26,7 @@ export function PrayerTimeStrip({ todayTimes }: { todayTimes: PrayerTimes | null
         return (
           <View key={id} style={styles.cell}>
             <AppText variant="caption" color={color}>
-              {prayers[id].title}
+              {t.prayers[id].title}
             </AppText>
             <AppText variant="bodySmall" color={color} style={styles.time}>
               {formatClock(todayTimes[id])}

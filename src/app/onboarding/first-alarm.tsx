@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText, Button } from '@/components/atoms';
 import { DigitalClock, OnboardingFooter } from '@/components/molecules';
+import { useTranslation } from '@/i18n';
 import { refreshPrayerTimesIfStale } from '@/services/PrayerTimesService';
 import { usePrayerStore, useSettingsStore } from '@/stores';
 import { spacing, useTheme } from '@/theme';
@@ -13,6 +14,7 @@ import { spacing, useTheme } from '@/theme';
 export default function OnboardingFirstAlarmScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const t = useTranslation();
   const setOnboardingDone = useSettingsStore((s) => s.setOnboardingDone);
   const todayTimes = usePrayerStore((s) => s.todayTimes);
   const cityName = usePrayerStore((s) => s.cityName);
@@ -41,7 +43,7 @@ export default function OnboardingFirstAlarmScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.center}>
         <AppText variant="body" color="textSecondary">
-          Tomorrow&apos;s Fajr
+          {t.onboarding.firstAlarm.tomorrowFajr}
         </AppText>
         <View style={styles.clockGap}>
           <DigitalClock time={fajrTime} />
@@ -51,14 +53,14 @@ export default function OnboardingFirstAlarmScreen() {
           <AppText variant="caption" color="textSecondary">
             {locationGranted
               ? cityName
-                ? `Calculated for your location — ${cityName}`
-                : 'Calculated for your location'
-              : 'Grant location access to calculate your Fajr time'}
+                ? t.onboarding.firstAlarm.calculatedForCity(cityName)
+                : t.onboarding.firstAlarm.calculatedGeneric
+              : t.onboarding.firstAlarm.grantLocation}
           </AppText>
         </View>
       </View>
       <View style={styles.footer}>
-        <Button title="Set First Alarm" onPress={setFirstAlarm} />
+        <Button title={t.onboarding.firstAlarm.setFirstAlarm} onPress={setFirstAlarm} />
         <OnboardingFooter activeIndex={3} total={4} onSkip={complete} />
       </View>
     </SafeAreaView>

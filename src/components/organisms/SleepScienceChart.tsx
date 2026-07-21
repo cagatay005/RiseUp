@@ -2,6 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
 
 import { AppText } from '@/components/atoms';
+import { useTranslation } from '@/i18n';
 import { radius, spacing, useTheme } from '@/theme';
 
 /**
@@ -11,11 +12,12 @@ import { radius, spacing, useTheme } from '@/theme';
  */
 export function SleepScienceChart() {
   const { colors } = useTheme();
+  const t = useTranslation();
 
   return (
     <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       <AppText variant="caption" color="secondary" style={styles.caption}>
-        SLEEP DEPTH & BRAIN ACTIVITY
+        {t.onboarding.science.caption}
       </AppText>
       <Svg width="100%" height={120} viewBox="0 0 300 120">
         <Path d="M210,25 C230,17 245,18 260,25 L260,108 L210,108 Z" fill={colors.accent} opacity={0.22} />
@@ -31,13 +33,13 @@ export function SleepScienceChart() {
       </Svg>
       <View style={styles.axisRow}>
         <AppText variant="caption" color="textSecondary">
-          10PM
+          {t.onboarding.science.axisEvening}
         </AppText>
         <AppText variant="caption" color="textSecondary">
-          2AM
+          {t.onboarding.science.axisNight}
         </AppText>
         <AppText variant="caption" color="textSecondary">
-          6AM
+          {t.onboarding.science.axisDawn}
         </AppText>
       </View>
     </View>

@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText, Button, Heading } from '@/components/atoms';
 import { AlarmRow, FreezeCounter, NextPrayerCountdown, StreakFlame } from '@/components/molecules';
+import { useTranslation } from '@/i18n';
 import { PRAYER_IDS_IN_ORDER, refreshPrayerTimesIfStale } from '@/services/PrayerTimesService';
 import { useAlarmsStore, usePrayerStore, useSettingsStore, useStreakStore } from '@/stores';
 import { radius, spacing, useTheme } from '@/theme';
@@ -23,6 +24,7 @@ export default function HomeScreen() {
 function HomeContent() {
   const router = useRouter();
   const { colors } = useTheme();
+  const t = useTranslation();
 
   const alarms = useAlarmsStore((s) => s.alarms);
   const toggleAlarm = useAlarmsStore((s) => s.toggleAlarm);
@@ -67,7 +69,7 @@ function HomeContent() {
         >
           <Ionicons name="alert-circle-outline" size={14} color={colors.warning} />
           <AppText variant="caption" style={{ color: colors.warning }}>
-            {missedCount} missed prayer{missedCount === 1 ? '' : 's'} to make up
+            {t.home.missedPrayers(missedCount)}
           </AppText>
         </Pressable>
       ) : null}
@@ -75,8 +77,8 @@ function HomeContent() {
       <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
         {sortedAlarms.length === 0 ? (
           <View style={styles.empty}>
-            <AppText color="textSecondary">No alarms yet</AppText>
-            <Button title="Add Alarm" variant="secondary" onPress={() => router.push('/alarm-setup')} />
+            <AppText color="textSecondary">{t.home.noAlarmsYet}</AppText>
+            <Button title={t.home.addAlarm} variant="secondary" onPress={() => router.push('/alarm-setup')} />
           </View>
         ) : (
           sortedAlarms.map((alarm) => (
@@ -95,7 +97,7 @@ function HomeContent() {
       <Pressable
         onPress={() => router.push('/alarm-setup')}
         accessibilityRole="button"
-        accessibilityLabel="Add alarm"
+        accessibilityLabel={t.home.addAlarmLabel}
         style={[styles.fab, { backgroundColor: colors.textPrimary }]}
       >
         <Ionicons name="add" size={24} color={colors.background} />

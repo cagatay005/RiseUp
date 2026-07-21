@@ -11,7 +11,7 @@ describe('buildPremiumProducts', () => {
 
     expect(monthly.priceString).toContain(String(rules.premiumMonthlyTry).replace('.', ','));
     expect(monthly.priceString).toMatch(/₺|TRY/);
-    expect(yearly.badge).toBe('Save 33%');
+    expect(yearly.badge).toBe(true);
     expect(monthly.badge).toBeUndefined();
   });
 
@@ -42,6 +42,6 @@ describe('buildPremiumProducts', () => {
 
   it('yıllık planın indirim rozeti her para biriminde tutarlı kalır', () => {
     const products = buildPremiumProducts({ languageCode: 'en', currencyCode: 'USD', languageTag: 'en-US' });
-    expect(products.find((p) => p.plan === 'yearly')!.badge).toBe('Save 33%');
+    expect(products.find((p) => p.plan === 'yearly')!.badge).toBe(true);
   });
 });

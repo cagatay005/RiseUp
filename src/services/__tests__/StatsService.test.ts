@@ -3,7 +3,6 @@ import { describe, expect, it } from '@jest/globals';
 import type { DayLog } from '../../stores/streakStore';
 import {
   computeDailyStreakLengths,
-  formatMonthYear,
   formatSince,
   formatWeekRangeLabel,
   getMonthMatrix,
@@ -12,6 +11,15 @@ import {
   streakShadeOpacity,
   weekdayLetter,
 } from '../StatsService';
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+const MONTH_ABBR = MONTH_NAMES.map((m) => m.slice(0, 3));
+const formatMonthDay = (date: Date) => `${MONTH_NAMES[date.getMonth()]} ${date.getDate()}`;
+const formatWeekRange = (start: Date, end: Date) =>
+  `${MONTH_ABBR[start.getMonth()]} ${start.getDate()} – ${MONTH_ABBR[end.getMonth()]} ${end.getDate()}`;
 
 describe('startOfWeekMonday', () => {
   it('bir Çarşamba için o haftanın Pazartesi\'sini döner', () => {
@@ -96,32 +104,26 @@ describe('streakShadeOpacity', () => {
   });
 });
 
-describe('formatMonthYear', () => {
-  it('"July 2026" biçiminde döner', () => {
-    expect(formatMonthYear(new Date(2026, 6, 15))).toBe('July 2026');
-  });
-});
-
 describe('formatSince', () => {
-  it('null ise today döner', () => {
-    expect(formatSince(null)).toBe('today');
+  it('null ise verilen todayLabel döner', () => {
+    expect(formatSince(null, formatMonthDay, 'today')).toBe('today');
   });
 
-  it('ISO tarihten "May 3" biçimini üretir', () => {
-    expect(formatSince('2026-05-03T00:00:00.000Z')).toBe('May 3');
+  it('ISO tarihten formatMonthDay ile biçimlenmiş tarihi üretir', () => {
+    expect(formatSince('2026-05-03T00:00:00.000Z', formatMonthDay, 'today')).toBe('May 3');
   });
 });
 
 describe('formatWeekRangeLabel', () => {
-  it('bugünün haftası için "This week" döner', () => {
+  it('bugünün haftası için thisWeekLabel döner', () => {
     const today = new Date(2026, 6, 22);
     const thisWeekStart = startOfWeekMonday(today);
-    expect(formatWeekRangeLabel(thisWeekStart, today)).toBe('This week');
+    expect(formatWeekRangeLabel(thisWeekStart, today, 'This week', formatWeekRange)).toBe('This week');
   });
 
-  it('geçmiş hafta için "Jul 6 – Jul 12" gibi bir aralık döner', () => {
+  it('geçmiş hafta için formatWeekRange ile biçimlenmiş bir aralık döner', () => {
     const today = new Date(2026, 6, 22);
     const pastWeekStart = new Date(2026, 6, 6);
-    expect(formatWeekRangeLabel(pastWeekStart, today)).toBe('Jul 6 – Jul 12');
+    expect(formatWeekRangeLabel(pastWeekStart, today, 'This week', formatWeekRange)).toBe('Jul 6 – Jul 12');
   });
 });

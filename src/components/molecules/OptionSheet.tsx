@@ -3,6 +3,7 @@ import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText, Heading } from '@/components/atoms';
+import { useTranslation } from '@/i18n';
 import { radius, spacing, useTheme } from '@/theme';
 
 export interface OptionSheetOption {
@@ -22,10 +23,11 @@ export interface OptionSheetProps {
 /** Tek seçimli alttan açılır liste — Ayarlar'daki Language/Quran Translation seçicileri paylaşır. */
 export function OptionSheet({ visible, title, options, selectedId, onSelect, onClose }: OptionSheetProps) {
   const { colors } = useTheme();
+  const t = useTranslation();
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close" />
+      <Pressable style={styles.backdrop} onPress={onClose} accessibilityRole="button" accessibilityLabel={t.common.close} />
       <SafeAreaView style={[styles.sheet, { backgroundColor: colors.surfaceElevated }]} edges={['bottom']}>
         <Heading variant="h2" style={styles.title}>
           {title}

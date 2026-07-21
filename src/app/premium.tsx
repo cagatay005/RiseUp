@@ -5,26 +5,16 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText, Button, Heading } from '@/components/atoms';
+import { useTranslation } from '@/i18n';
 import { getPremiumProducts, startFreeTrial } from '@/services/IAPService';
-import { MONTH_NAMES } from '@/services/scheduleHelpers';
 import { usePremiumStore, type PremiumPlan } from '@/stores';
 import { radius, rules, spacing, useTheme } from '@/theme';
-
-const FEATURES: { icon: keyof typeof Ionicons.glyphMap; label: string }[] = [
-  { icon: 'camera-outline', label: 'Prayer Rug Scan task' },
-  { icon: 'mic-outline', label: 'Verse Recitation task with scoring' },
-  { icon: 'snow-outline', label: `${rules.premiumMonthlyFreezes} streak freezes every month` },
-];
-
-function formatTrialEnd(iso: string): string {
-  const d = new Date(iso);
-  return `${MONTH_NAMES[d.getMonth()]} ${d.getDate()}`;
-}
 
 /** DESIGN §7 — Premium/Paywall (issue #18). */
 export default function PremiumScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const t = useTranslation();
   const isPremium = usePremiumStore((s) => s.isPremium);
   const plan = usePremiumStore((s) => s.plan);
   const trialEndsAt = usePremiumStore((s) => s.trialEndsAt);
@@ -35,17 +25,17 @@ export default function PremiumScreen() {
   if (isPremium) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-        <Pressable onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="Close">
+        <Pressable onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t.premium.close}>
           <Ionicons name="close" size={22} color={colors.textSecondary} />
         </Pressable>
         <View style={styles.centerFill}>
           <Ionicons name="diamond" size={40} color={colors.gold} />
           <Heading variant="h1" style={styles.center}>
-            You're Premium
+            {t.premium.youArePremium}
           </Heading>
           <AppText color="textSecondary" style={styles.center}>
-            {plan === 'yearly' ? 'Yearly' : 'Monthly'} plan is active
-            {trialEndsAt ? ` — trial ends ${formatTrialEnd(trialEndsAt)}` : ''}.
+            {t.premium.planActive(plan === 'yearly' ? t.premium.yearly : t.premium.monthly)}
+            {trialEndsAt ? t.premium.trialEnds(t.common.formatMonthDay(new Date(trialEndsAt))) : ''}.
           </AppText>
         </View>
       </SafeAreaView>
@@ -57,21 +47,27 @@ export default function PremiumScreen() {
     router.back();
   }
 
+  const features: { icon: keyof typeof Ionicons.glyphMap; label: string }[] = [
+    { icon: 'camera-outline', label: t.premium.featureRugScan },
+    { icon: 'mic-outline', label: t.premium.featureRecitation },
+    { icon: 'snow-outline', label: t.premium.featureFreezes(rules.premiumMonthlyFreezes) },
+  ];
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <Pressable onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="Close">
+      <Pressable onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t.premium.close}>
         <Ionicons name="close" size={22} color={colors.textSecondary} />
       </Pressable>
 
       <Heading variant="h1" style={styles.title}>
-        Unlock your full practice
+        {t.premium.title}
       </Heading>
       <AppText color="textSecondary" style={styles.subtitle}>
-        Deepen every task and protect your streak.
+        {t.premium.subtitle}
       </AppText>
 
       <View style={styles.features}>
-        {FEATURES.map((f) => (
+        {features.map((f) => (
           <View key={f.label} style={styles.featureRow}>
             <Ionicons name={f.icon} size={19} color={colors.secondary} />
             <AppText variant="bodySmall">{f.label}</AppText>
@@ -99,18 +95,18 @@ export default function PremiumScreen() {
               {product.badge ? (
                 <View style={[styles.badge, { backgroundColor: colors.gold }]}>
                   <AppText variant="caption" style={{ color: colors.onAccent, fontWeight: '700' }}>
-                    {product.badge.toUpperCase()}
+                    {t.premium.saveBadge.toUpperCase()}
                   </AppText>
                 </View>
               ) : null}
               <AppText variant="caption" color="textSecondary">
-                {product.plan === 'yearly' ? 'Yearly' : 'Monthly'}
+                {product.plan === 'yearly' ? t.premium.yearly : t.premium.monthly}
               </AppText>
               <AppText variant="h2" style={styles.planPrice}>
                 {product.priceString}
               </AppText>
               <AppText variant="caption" color="textSecondary">
-                {product.plan === 'yearly' ? 'per year' : 'per month'}
+                {product.plan === 'yearly' ? t.premium.perYear : t.premium.perMonth}
               </AppText>
             </Pressable>
           );
@@ -118,11 +114,10 @@ export default function PremiumScreen() {
       </View>
 
       <View style={styles.footer}>
-        <Button title="Start 7-Day Free Trial" onPress={handleStartTrial} style={styles.fullWidth} />
+        <Button title={t.premium.startTrial} onPress={handleStartTrial} style={styles.fullWidth} />
         {selectedProduct ? (
           <AppText variant="caption" color="textSecondary" style={styles.legal}>
-            Free for {rules.trialDays} days, then {selectedProduct.priceString}
-            {selectedPlan === 'yearly' ? '/yr' : '/mo'}. Cancel anytime.
+            {t.premium.legal(rules.trialDays, selectedProduct.priceString, selectedPlan === 'yearly' ? 'yr' : 'mo')}
           </AppText>
         ) : null}
       </View>

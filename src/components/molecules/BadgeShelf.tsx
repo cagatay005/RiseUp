@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/atoms';
 import { badges, type BadgeDef } from '../../../design/tokens';
+import { useTranslation } from '@/i18n';
 import { radius, spacing, useTheme } from '@/theme';
 
 const ICONS: Record<BadgeDef['icon'], keyof typeof Ionicons.glyphMap> = {
@@ -20,6 +21,7 @@ export interface BadgeShelfProps {
 /** DESIGN §3.3: kazanılan rozetler gold çerçeveli, kazanılmayanlar silüet (soluk border). */
 export function BadgeShelf({ earnedBadgeIds }: BadgeShelfProps) {
   const { colors } = useTheme();
+  const t = useTranslation();
 
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
@@ -35,7 +37,7 @@ export function BadgeShelf({ earnedBadgeIds }: BadgeShelfProps) {
               />
             </View>
             <AppText variant="caption" color="textSecondary" style={styles.label}>
-              {badge.title}
+              {t.badges[badge.id as keyof typeof t.badges] ?? badge.title}
             </AppText>
           </View>
         );

@@ -28,15 +28,13 @@ export function getNextPrayer(todayTimes: PrayerTimes | null, now: Date): NextPr
   return null;
 }
 
-export const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
-
-/** 'YYYY-MM-DD' → "Missed July 17" (kaza defteri listesi). */
-export function formatMissedDate(dayKey: string): string {
-  const [, month, day] = dayKey.split('-').map(Number);
-  return `Missed ${MONTH_NAMES[month! - 1]} ${day}`;
+/**
+ * 'YYYY-MM-DD' → yerelleştirilmiş kısa tarih (kaza defteri listesi). "Missed"
+ * ön eki burada değil, çağıran tarafta i18n metniyle (t.qada.missedDate) eklenir.
+ */
+export function formatMissedDate(dayKey: string, formatMonthDay: (date: Date) => string): string {
+  const [y, m, d] = dayKey.split('-').map(Number);
+  return formatMonthDay(new Date(y!, m! - 1, d!));
 }
 
 /** "1h 24m" / "24m" / "Now" biçiminde kısa geri sayım metni. */

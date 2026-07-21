@@ -5,7 +5,8 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText, Button, Heading } from '@/components/atoms';
-import { prayers, rules, type PrayerId } from '../../design/tokens';
+import { rules, type PrayerId } from '../../design/tokens';
+import { useTranslation } from '@/i18n';
 import { formatMissedDate } from '@/services/scheduleHelpers';
 import { useStreakStore } from '@/stores';
 import { radius, spacing, useTheme } from '@/theme';
@@ -13,6 +14,7 @@ import { radius, spacing, useTheme } from '@/theme';
 export default function QadaScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const t = useTranslation();
   const qadaLedger = useStreakStore((s) => s.qadaLedger);
 
   const sorted = useMemo(
@@ -26,7 +28,7 @@ export default function QadaScreen() {
         <Pressable onPress={() => router.back()} accessibilityRole="button">
           <Ionicons name="chevron-back" size={22} color={colors.textSecondary} />
         </Pressable>
-        <Heading variant="h2">Make up your prayers</Heading>
+        <Heading variant="h2">{t.qada.title}</Heading>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -34,8 +36,7 @@ export default function QadaScreen() {
         <View style={[styles.warning, { backgroundColor: `${colors.warning}1F` }]}>
           <Ionicons name="alert-circle-outline" size={16} color={colors.warning} />
           <AppText variant="caption" style={[styles.warningText, { color: colors.warning }]}>
-            {sorted.length} missed prayer{sorted.length === 1 ? '' : 's'} — at {rules.qadaPerFreezeLoss}{' '}
-            accumulated you lose 1 freeze
+            {t.qada.warning(sorted.length, rules.qadaPerFreezeLoss)}
           </AppText>
           <Ionicons name="snow-outline" size={14} color={colors.warning} />
         </View>
@@ -46,12 +47,12 @@ export default function QadaScreen() {
           <View style={styles.empty}>
             <Ionicons name="checkmark-circle-outline" size={32} color={colors.success} />
             <AppText color="textSecondary" style={styles.center}>
-              No missed prayers — you're all caught up.
+              {t.qada.allCaughtUp}
             </AppText>
           </View>
         ) : (
           sorted.map((entry, i) => {
-            const title = prayers[entry.prayerId as PrayerId]?.title ?? entry.prayerId;
+            const title = t.prayers[entry.prayerId as PrayerId]?.title ?? entry.prayerId;
             const featured = i === 0;
             return (
               <View
@@ -61,11 +62,11 @@ export default function QadaScreen() {
                 <View style={styles.cardText}>
                   <AppText variant="body">{title}</AppText>
                   <AppText variant="caption" color="textSecondary">
-                    {formatMissedDate(entry.missedDate)}
+                    {t.qada.missedDate(formatMissedDate(entry.missedDate, t.common.formatMonthDay))}
                   </AppText>
                 </View>
                 <Button
-                  title={featured ? 'Make up now' : 'Make up'}
+                  title={featured ? t.qada.makeUpNow : t.qada.makeUp}
                   variant={featured ? 'primary' : 'secondary'}
                   onPress={() =>
                     router.push({
@@ -83,7 +84,7 @@ export default function QadaScreen() {
 
       {sorted.length > 0 ? (
         <AppText variant="caption" color="textSecondary" style={styles.footnote}>
-          Each make-up prayer clears one entry and protects your freezes. Confirm with a quick Qibla task.
+          {t.qada.footnote}
         </AppText>
       ) : null}
     </SafeAreaView>

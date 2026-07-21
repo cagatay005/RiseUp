@@ -3,10 +3,10 @@ import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText, Heading } from '@/components/atoms';
+import { useTranslation } from '@/i18n';
 import {
   computeDailyStreakLengths,
   dayKeyOf,
-  formatMonthYear,
   formatSince,
   getMonthMatrix,
   streakShadeOpacity,
@@ -31,6 +31,7 @@ function opacityToHex(opacity: number): string {
 
 export function StreakCalendar({ dayLog, startedAt }: StreakCalendarProps) {
   const { colors } = useTheme();
+  const t = useTranslation();
   const today = new Date();
   const [viewed, setViewed] = useState({ year: today.getFullYear(), month: today.getMonth() });
 
@@ -50,15 +51,15 @@ export function StreakCalendar({ dayLog, startedAt }: StreakCalendarProps) {
     <View style={styles.container}>
       <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <View style={styles.header}>
-          <Pressable onPress={() => goToMonth(-1)} accessibilityRole="button" accessibilityLabel="Previous month">
+          <Pressable onPress={() => goToMonth(-1)} accessibilityRole="button" accessibilityLabel={t.stats.previousMonth}>
             <Ionicons name="chevron-back" size={20} color={colors.textSecondary} />
           </Pressable>
-          <Heading variant="h2">{formatMonthYear(new Date(viewed.year, viewed.month, 1))}</Heading>
+          <Heading variant="h2">{t.common.formatMonthYear(new Date(viewed.year, viewed.month, 1))}</Heading>
           <Pressable
             onPress={() => goToMonth(1)}
             disabled={isCurrentMonth}
             accessibilityRole="button"
-            accessibilityLabel="Next month"
+            accessibilityLabel={t.stats.nextMonth}
           >
             <Ionicons
               name="chevron-forward"
@@ -122,7 +123,9 @@ export function StreakCalendar({ dayLog, startedAt }: StreakCalendarProps) {
         <AppText variant="numberLarge" style={{ color: colors.accent }}>
           {successRate}%
         </AppText>
-        <AppText color="textSecondary">success since {formatSince(startedAt)}</AppText>
+        <AppText color="textSecondary">
+          {t.stats.successSince(formatSince(startedAt, t.common.formatMonthDay, t.common.today))}
+        </AppText>
       </View>
     </View>
   );

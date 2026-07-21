@@ -3,13 +3,15 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText, Heading } from '@/components/atoms';
-import { prayers, type PrayerId } from '../../../design/tokens';
+import { type PrayerId } from '../../../design/tokens';
 import type { PrayerTimes } from '@/stores/prayerStore';
 import { formatCountdown, getNextPrayer } from '@/services/scheduleHelpers';
+import { useTranslation } from '@/i18n';
 import { radius, spacing, useTheme } from '@/theme';
 
 export function NextPrayerCountdown({ todayTimes }: { todayTimes: PrayerTimes | null }) {
   const { colors } = useTheme();
+  const t = useTranslation();
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -25,15 +27,15 @@ export function NextPrayerCountdown({ todayTimes }: { todayTimes: PrayerTimes | 
       {next ? (
         <>
           <Heading variant="h2" style={styles.name}>
-            {prayers[next.prayerId as PrayerId].title}
+            {t.prayers[next.prayerId as PrayerId].title}
           </Heading>
           <AppText variant="bodySmall" color="textSecondary" style={styles.countdown}>
-            in {formatCountdown(next.time, now)}
+            {t.nextPrayer.inLabel(formatCountdown(next.time, now))}
           </AppText>
         </>
       ) : (
         <AppText variant="bodySmall" color="textSecondary" style={styles.countdown}>
-          Grant location access to see your next prayer
+          {t.nextPrayer.grantLocation}
         </AppText>
       )}
     </View>

@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText, Button, Heading } from '@/components/atoms';
 import { CompassDial } from '@/components/organisms';
 import { useQiblaHold } from '@/hooks/useQiblaHold';
+import { useTranslation } from '@/i18n';
 import { completeQada, recordQiblaCompletion } from '@/services/StreakEngine';
 import { usePrayerStore } from '@/stores';
 import { rules, spacing, useTheme } from '@/theme';
@@ -19,6 +20,7 @@ import { rules, spacing, useTheme } from '@/theme';
 export default function QadaVerifyScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const t = useTranslation();
   const { qadaId, prayerTitle } = useLocalSearchParams<{ qadaId: string; prayerTitle?: string }>();
   const location = usePrayerStore((s) => s.location);
   const { bearing, heading, aligned, done, secondsRemaining } = useQiblaHold(location);
@@ -34,16 +36,16 @@ export default function QadaVerifyScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <Heading variant="h2" style={styles.center}>
-        Make up {prayerTitle ?? 'your prayer'}
+        {t.qadaVerify.title(prayerTitle ?? t.qadaVerify.yourPrayer)}
       </Heading>
       <AppText color="textSecondary" style={styles.center}>
-        Face the Qibla and hold for {rules.qiblaHoldSeconds} seconds to confirm
+        {t.qadaVerify.instructions(rules.qiblaHoldSeconds)}
       </AppText>
       <View style={styles.dial}>
         {bearing === null ? (
           <View style={[styles.unavailable, { borderColor: colors.border }]}>
             <Ionicons name="location-outline" size={26} color={colors.secondary} />
-            <AppText color="textSecondary">Location is needed to calculate Qibla.</AppText>
+            <AppText color="textSecondary">{t.qadaVerify.locationNeeded}</AppText>
           </View>
         ) : (
           <CompassDial heading={heading} targetBearing={bearing} aligned={aligned} />
@@ -52,7 +54,7 @@ export default function QadaVerifyScreen() {
       <AppText variant="numberLarge" style={[styles.countdown, { color: aligned ? colors.success : colors.accent }]}>
         {secondsRemaining}
       </AppText>
-      <Button title="Cancel" variant="ghost" onPress={() => router.back()} />
+      <Button title={t.qadaVerify.cancel} variant="ghost" onPress={() => router.back()} />
     </SafeAreaView>
   );
 }

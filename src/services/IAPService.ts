@@ -7,8 +7,13 @@ export interface PremiumProduct {
   plan: PremiumPlan;
   /** Cihazın yerel ayarına göre biçimlendirilmiş fiyat (ör. "$4.99", "₺79,99"). */
   priceString: string;
-  /** Yalnız yearly planda gösterilen indirim rozeti. */
-  badge?: string;
+  /**
+   * Yalnız yearly planda true — indirim rozeti gösterilsin mi. Rozetin metni
+   * burada YOKTUR: fiyatlandırma cihazın gerçek yerel ayarına (para birimi),
+   * rozet metni ise arayüz diline (settingsStore.language / t.premium.saveBadge)
+   * bağlıdır — ikisi bağımsız eksenler, karıştırılmamalı.
+   */
+  badge?: boolean;
 }
 
 export interface DeviceLocale {
@@ -16,8 +21,6 @@ export interface DeviceLocale {
   currencyCode: string | null;
   languageTag: string;
 }
-
-const SAVE_BADGE = 'Save 33%';
 
 /**
  * DÜRÜST SINIR (issue #18 notu: "sandbox/test modunda çalışması yeterli"):
@@ -40,7 +43,7 @@ export function buildPremiumProducts(locale: DeviceLocale): PremiumProduct[] {
   if (locale.languageCode === 'tr') {
     return [
       { plan: 'monthly', priceString: formatAmount(rules.premiumMonthlyTry, 'tr-TR', 'TRY') },
-      { plan: 'yearly', priceString: formatAmount(rules.premiumYearlyTry, 'tr-TR', 'TRY'), badge: SAVE_BADGE },
+      { plan: 'yearly', priceString: formatAmount(rules.premiumYearlyTry, 'tr-TR', 'TRY'), badge: true },
     ];
   }
 
@@ -50,7 +53,7 @@ export function buildPremiumProducts(locale: DeviceLocale): PremiumProduct[] {
     {
       plan: 'yearly',
       priceString: formatAmount(rules.premiumYearlyUsd, locale.languageTag, currency),
-      badge: SAVE_BADGE,
+      badge: true,
     },
   ];
 }

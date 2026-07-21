@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText, Heading } from '@/components/atoms';
 import { OptionSheet, SettingsRow } from '@/components/molecules';
+import { useTranslation } from '@/i18n';
 import { openSystemSettings } from '@/services/PermissionsService';
 import { useSettingsStore } from '@/stores';
 import { radius, spacing, useTheme } from '@/theme';
@@ -22,6 +23,7 @@ type Sheet = 'language' | 'translation' | null;
 export default function SettingsScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const t = useTranslation();
   const language = useSettingsStore((s) => s.language);
   const setLanguage = useSettingsStore((s) => s.setLanguage);
   const translationLanguage = useSettingsStore((s) => s.translationLanguage);
@@ -36,42 +38,42 @@ export default function SettingsScreen() {
   const permissionValues = [permissionsSnapshot.location, permissionsSnapshot.notifications];
   const allGranted = permissionValues.every((v) => v === 'granted');
   const anyDenied = permissionValues.some((v) => v === 'denied');
-  const permissionsLabel = allGranted ? 'All granted' : anyDenied ? 'Action needed' : 'Not set';
+  const permissionsLabel = allGranted ? t.settings.allGranted : anyDenied ? t.settings.actionNeeded : t.settings.notSet;
   const permissionsColor = allGranted ? 'success' : anyDenied ? 'warning' : 'textSecondary';
 
   function showLegalPlaceholder(title: string) {
-    Alert.alert(title, 'Not published yet — check back once RiseUp is live on the stores.');
+    Alert.alert(title, t.settings.legalNotPublished);
   }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <Heading variant="h1" style={styles.heading}>
-        Settings
+        {t.settings.title}
       </Heading>
 
       <View style={styles.content}>
         <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <SettingsRow
             icon="globe-outline"
-            label="Language"
+            label={t.settings.language}
             value={languageLabel}
             onPress={() => setSheet('language')}
           />
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
           <SettingsRow
             icon="book-outline"
-            label="Quran Translation"
+            label={t.settings.quranTranslation}
             value={translationLabel}
             onPress={() => setSheet('translation')}
           />
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
-          <SettingsRow icon="diamond" label="Go Premium" accent onPress={() => router.push('/premium')} />
+          <SettingsRow icon="diamond" label={t.settings.goPremium} accent onPress={() => router.push('/premium')} />
         </View>
 
         <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <SettingsRow
             icon="shield-checkmark-outline"
-            label="Permissions"
+            label={t.settings.permissions}
             value={permissionsLabel}
             valueColor={permissionsColor}
             onPress={openSystemSettings}
@@ -81,27 +83,27 @@ export default function SettingsScreen() {
         <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <SettingsRow
             icon="document-text-outline"
-            label="Privacy Policy"
+            label={t.settings.privacyPolicy}
             trailingIcon="open-outline"
-            onPress={() => showLegalPlaceholder('Privacy Policy')}
+            onPress={() => showLegalPlaceholder(t.settings.privacyPolicy)}
           />
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
           <SettingsRow
             icon="document-text-outline"
-            label="Terms of Use"
+            label={t.settings.termsOfUse}
             trailingIcon="open-outline"
-            onPress={() => showLegalPlaceholder('Terms of Use')}
+            onPress={() => showLegalPlaceholder(t.settings.termsOfUse)}
           />
         </View>
 
         <AppText variant="caption" color="textSecondary" style={styles.version}>
-          RiseUp {Constants.expoConfig?.version ?? ''}
+          {t.settings.version(Constants.expoConfig?.version ?? '')}
         </AppText>
       </View>
 
       <OptionSheet
         visible={sheet === 'language'}
-        title="Language"
+        title={t.settings.language}
         options={uiLanguages}
         selectedId={language}
         onSelect={(id) => setLanguage(id as typeof language)}
@@ -109,7 +111,7 @@ export default function SettingsScreen() {
       />
       <OptionSheet
         visible={sheet === 'translation'}
-        title="Quran Translation"
+        title={t.settings.quranTranslation}
         options={translationLanguages}
         selectedId={translationLanguage}
         onSelect={(id) => setTranslationLanguage(id as typeof translationLanguage)}

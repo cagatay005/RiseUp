@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText, ArabicText, Button, Heading } from '@/components/atoms';
 import { WaveformMeter } from '@/components/organisms';
 import { getRandomVerse } from '@/content/verses';
+import { useTranslation } from '@/i18n';
 import {
   computeVoicedRatio,
   expectedReadingSeconds,
@@ -28,6 +29,7 @@ type Phase = 'recite' | 'result';
 export default function RecitationTaskScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const t = useTranslation();
   const isPremium = usePremiumStore((s) => s.isPremium);
   const translationLanguage = useSettingsStore((s) => s.translationLanguage);
 
@@ -53,7 +55,7 @@ export default function RecitationTaskScreen() {
   async function startRecording() {
     const { granted } = await requestRecordingPermissionsAsync();
     if (!granted) {
-      Alert.alert('Microphone needed', 'Allow microphone access to recite the verse.');
+      Alert.alert(t.recitationTask.micNeededTitle, t.recitationTask.micNeededBody);
       return;
     }
     samplesRef.current = [];
@@ -89,12 +91,12 @@ export default function RecitationTaskScreen() {
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.premium}>
           <Ionicons name="lock-closed-outline" size={32} color={colors.gold} />
-          <Heading variant="h2">Verse Recitation is Premium</Heading>
+          <Heading variant="h2">{t.recitationTask.premiumTitle}</Heading>
           <AppText color="textSecondary" style={styles.center}>
-            Upgrade to dismiss alarms by reciting a verse out loud.
+            {t.recitationTask.premiumBody}
           </AppText>
-          <Button title="Upgrade to Premium" onPress={() => router.push('/premium')} />
-          <Button title="Go Back" variant="ghost" onPress={() => router.back()} />
+          <Button title={t.recitationTask.upgradeButton} onPress={() => router.push('/premium')} />
+          <Button title={t.recitationTask.goBack} variant="ghost" onPress={() => router.back()} />
         </View>
       </SafeAreaView>
     );
@@ -116,10 +118,10 @@ export default function RecitationTaskScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <Heading variant="h2" style={styles.center}>
-        Recite out loud to dismiss
+        {t.recitationTask.reciteTitle}
       </Heading>
       <AppText color="textSecondary" style={styles.center}>
-        Hold the microphone and read the verse clearly
+        {t.recitationTask.reciteSubtitle}
       </AppText>
 
       <View style={[styles.verseCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -169,7 +171,7 @@ export default function RecitationTaskScreen() {
               onPressIn={() => void startRecording()}
               onPressOut={() => void stopRecording()}
               accessibilityRole="button"
-              accessibilityLabel="Hold to record"
+              accessibilityLabel={t.recitationTask.holdToRecord}
               style={[
                 styles.micButton,
                 {
@@ -184,7 +186,7 @@ export default function RecitationTaskScreen() {
                 color={recorderState.isRecording ? colors.onAccent : colors.accent}
               />
             </Pressable>
-            <Button title="Cancel task" variant="ghost" onPress={() => router.back()} />
+            <Button title={t.recitationTask.cancelTask} variant="ghost" onPress={() => router.back()} />
           </View>
         </>
       ) : (
@@ -193,16 +195,14 @@ export default function RecitationTaskScreen() {
             {score}
           </AppText>
           <Heading variant="quote" style={styles.center}>
-            {passed
-              ? 'Beautifully recited. Your day begins with light.'
-              : 'Almost there — take a breath and try again.'}
+            {passed ? t.recitationTask.passedMessage : t.recitationTask.failedMessage}
           </Heading>
           {passed ? (
-            <Button title="Complete Task" onPress={finishTask} style={styles.fullWidth} />
+            <Button title={t.recitationTask.completeTask} onPress={finishTask} style={styles.fullWidth} />
           ) : (
             // TODO: "Listen & retry" örnek okunuş sesi bir ses varlığı gerektirir;
             // varlık eklenince buraya örnek dinletme butonu gelecek (DESIGN §6.3).
-            <Button title="Try Again" onPress={() => setPhase('recite')} style={styles.fullWidth} />
+            <Button title={t.recitationTask.tryAgain} onPress={() => setPhase('recite')} style={styles.fullWidth} />
           )}
         </View>
       )}
