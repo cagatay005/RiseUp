@@ -195,7 +195,7 @@ function AlarmRingContent() {
             onPress={() => {
               // Gün kredisi yalnız en az bir görev gerçekten tamamlandıysa yazılır
               // (görevsiz alarmı kapatmak seri saymaz — seri görev disiplinidir).
-              if (completedTaskIds.length > 0) completeDay();
+              if (completedTaskIds.length > 0) completeDay(alarm.prayerId);
               finishRing();
             }}
             style={styles.fullWidth}

@@ -36,6 +36,11 @@ interface StreakState {
   earnedBadgeIds: string[];
   /** İstatistikteki yüzdelik başarı için başlangıç günü. */
   startedAt: string | null;
+  /** Rozet sayaçları — yalnız StreakEngine.evaluateBadges bunları okur. */
+  qiblaCompletions: number;
+  fajrCompletions: number;
+  /** %90+ skorla tamamlanan sure okuma sayısı (Golden Reciter rozeti). */
+  goldenRecitations: number;
 }
 
 interface StreakActions {
@@ -57,6 +62,9 @@ const initialState: StreakState = {
   cards: [],
   earnedBadgeIds: [],
   startedAt: null,
+  qiblaCompletions: 0,
+  fajrCompletions: 0,
+  goldenRecitations: 0,
 };
 
 export const useStreakStore = create<StreakState & StreakActions>()(

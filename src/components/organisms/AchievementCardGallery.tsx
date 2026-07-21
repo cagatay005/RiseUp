@@ -5,6 +5,7 @@ import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { AppText, Button, Heading } from '@/components/atoms';
 import { captureCard, saveCardToGallery, shareCard } from '@/services/CardRenderer';
 import { MONTH_NAMES } from '@/services/scheduleHelpers';
+import { recordCardShared } from '@/services/StreakEngine';
 import type { AchievementCard } from '@/stores/streakStore';
 import { radius, spacing, useTheme } from '@/theme';
 
@@ -52,6 +53,7 @@ export function AchievementCardGallery({ cards }: AchievementCardGalleryProps) {
     try {
       const uri = await captureCard(node);
       const ok = action === 'save' ? await saveCardToGallery(uri) : await shareCard(uri);
+      if (ok && action === 'share') recordCardShared();
       if (!ok) {
         Alert.alert(
           action === 'save' ? 'Permission needed' : 'Sharing unavailable',

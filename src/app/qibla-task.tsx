@@ -9,6 +9,7 @@ import { QuoteBlock } from '@/components/molecules';
 import { CompassDial } from '@/components/organisms';
 import { useQiblaHold } from '@/hooks/useQiblaHold';
 import { getDailyQuote } from '@/services/QuoteService';
+import { recordQiblaCompletion } from '@/services/StreakEngine';
 import { usePrayerStore, useRingStore } from '@/stores';
 import { rules, spacing, useTheme } from '@/theme';
 
@@ -21,6 +22,7 @@ export default function QiblaTaskScreen() {
 
   useEffect(() => {
     if (done) {
+      recordQiblaCompletion();
       // Alarm çalma ekranından push ile gelindi: tamamlanma ringStore'a yazılır,
       // back ile çalma ekranına dönülür (o ekran sıradaki görevi gösterir).
       useRingStore.getState().completeTask('qibla');

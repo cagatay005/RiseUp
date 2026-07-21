@@ -152,6 +152,12 @@ export const rules = {
   qiblaToleranceDegrees: 5,
   /** Sure okuma görevi: geçme eşiği (0–100 skor) */
   recitationPassScore: 60,
+  /** Rozet eşikleri — badges dizisindeki criteria metinleriyle eşleşir */
+  badgeFlameStreakDays: 7,
+  badgeQiblaMasterCount: 50,
+  badgeEarlyBirdFajrCount: 30,
+  badgeReciterCount: 10,
+  badgeReciterMinScore: 90,
   /** Günlük özlü söz havuzu ve seçim: güne deterministik (tarih % 50) */
   quotePoolSize: 50,
   /** Her 15 günlük seri için bir başarı kartı üretilir */

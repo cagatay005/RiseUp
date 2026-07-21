@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText, Button, Heading } from '@/components/atoms';
 import { CompassDial } from '@/components/organisms';
 import { useQiblaHold } from '@/hooks/useQiblaHold';
-import { completeQada } from '@/services/StreakEngine';
+import { completeQada, recordQiblaCompletion } from '@/services/StreakEngine';
 import { usePrayerStore } from '@/stores';
 import { rules, spacing, useTheme } from '@/theme';
 
@@ -25,6 +25,7 @@ export default function QadaVerifyScreen() {
 
   useEffect(() => {
     if (done && qadaId) {
+      recordQiblaCompletion();
       completeQada(qadaId);
       router.back();
     }

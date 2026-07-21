@@ -28,6 +28,30 @@ interface EngineState {
   dayLog: DayLog;
   cards: AchievementCard[];
   startedAt: string | null;
+  earnedBadgeIds: string[];
+  qiblaCompletions: number;
+  fajrCompletions: number;
+  goldenRecitations: number;
+}
+
+/**
+ * Rozet kazanma eşikleri (tokens.ts → badges, rules.badge*): her sayaç
+ * güncellemesinden sonra çağrılır, henüz kazanılmamış ve eşiği geçmiş
+ * rozetlerin id listesini döner. "communityHero" sayısal bir eşik değil,
+ * tek seferlik bir eylemdir (kart paylaşımı) — recordCardShared'da ayrıca ele alınır.
+ */
+export function evaluateBadges(
+  state: Pick<EngineState, 'bestStreak' | 'qiblaCompletions' | 'fajrCompletions' | 'goldenRecitations' | 'earnedBadgeIds'>,
+): string[] {
+  const newly: string[] = [];
+  const earned = (id: string) => state.earnedBadgeIds.includes(id);
+
+  if (!earned('flame7') && state.bestStreak >= rules.badgeFlameStreakDays) newly.push('flame7');
+  if (!earned('qiblaMaster') && state.qiblaCompletions >= rules.badgeQiblaMasterCount) newly.push('qiblaMaster');
+  if (!earned('earlyBird') && state.fajrCompletions >= rules.badgeEarlyBirdFajrCount) newly.push('earlyBird');
+  if (!earned('reciter') && state.goldenRecitations >= rules.badgeReciterCount) newly.push('reciter');
+
+  return newly;
 }
 
 /** Yerel takvim günü anahtarı: 'YYYY-MM-DD'. */
@@ -181,12 +205,29 @@ export function reconcileDays(now: Date = new Date()): void {
   if (patch) s.applyEngineResult(patch);
 }
 
-/** Alarm görevleri tamamlanınca çağrılır (alarm-ring): günü "done" yazar. */
-export function completeDay(now: Date = new Date()): void {
+/**
+ * Alarm görevleri tamamlanınca çağrılır (alarm-ring): günü "done" yazar.
+ * prayerId Early Bird rozeti için Fajr sayacını artırır (yalnız gün gerçekten
+ * yeni tamamlandıysa — aynı günü ikinci kez kapatmak sayaca ikinci kez eklemez).
+ */
+export function completeDay(prayerId: PrayerId, now: Date = new Date()): void {
   reconcileDays(now);
   const s = useStreakStore.getState();
   const patch = applyCompleteDay(s, dayKeyOf(now));
-  if (patch) s.applyEngineResult(patch);
+  if (!patch) return;
+
+  const fajrCompletions = prayerId === 'fajr' ? s.fajrCompletions + 1 : s.fajrCompletions;
+  const merged: Partial<EngineState> = { ...patch, fajrCompletions };
+  const newBadges = evaluateBadges({
+    bestStreak: merged.bestStreak ?? s.bestStreak,
+    qiblaCompletions: s.qiblaCompletions,
+    fajrCompletions,
+    goldenRecitations: s.goldenRecitations,
+    earnedBadgeIds: s.earnedBadgeIds,
+  });
+  if (newBadges.length > 0) merged.earnedBadgeIds = [...s.earnedBadgeIds, ...newBadges];
+
+  s.applyEngineResult(merged);
 }
 
 export function giveUp(now: Date = new Date()): GiveUpResult {
@@ -206,6 +247,7 @@ export function completeQada(id: string): void {
 /**
  * Sure okuma sonucu (DESIGN §6.3): eşik geçildiyse Kupa ekranı için bir
  * "recitation" başarı kartı üretir. Eşiğin altı hiçbir şey yazmaz.
+ * %90+ skor Golden Reciter rozeti sayacını artırır.
  */
 export function completeRecitation(score: number, surah: string): boolean {
   if (score < rules.recitationPassScore) return false;
@@ -217,6 +259,45 @@ export function completeRecitation(score: number, surah: string): boolean {
     value: score,
     earnedAt: new Date().toISOString(),
   };
-  s.applyEngineResult({ cards: [...s.cards, card] });
+  const goldenRecitations = score >= rules.badgeReciterMinScore ? s.goldenRecitations + 1 : s.goldenRecitations;
+  const newBadges = evaluateBadges({
+    bestStreak: s.bestStreak,
+    qiblaCompletions: s.qiblaCompletions,
+    fajrCompletions: s.fajrCompletions,
+    goldenRecitations,
+    earnedBadgeIds: s.earnedBadgeIds,
+  });
+
+  const patch: Partial<EngineState> = { cards: [...s.cards, card], goldenRecitations };
+  if (newBadges.length > 0) patch.earnedBadgeIds = [...s.earnedBadgeIds, ...newBadges];
+  s.applyEngineResult(patch);
   return true;
+}
+
+/**
+ * Kıble görevi başarıyla tamamlanınca çağrılır (qibla-task.tsx — alarm görevi;
+ * qada-verify.tsx — kaza doğrulaması). Her ikisi de Qibla Master rozeti için
+ * "başarılı kıble görevi" sayılır (DESIGN'da ikisi de aynı hiza+tutma akışı).
+ */
+export function recordQiblaCompletion(): void {
+  const s = useStreakStore.getState();
+  const qiblaCompletions = s.qiblaCompletions + 1;
+  const newBadges = evaluateBadges({
+    bestStreak: s.bestStreak,
+    qiblaCompletions,
+    fajrCompletions: s.fajrCompletions,
+    goldenRecitations: s.goldenRecitations,
+    earnedBadgeIds: s.earnedBadgeIds,
+  });
+
+  const patch: Partial<EngineState> = { qiblaCompletions };
+  if (newBadges.length > 0) patch.earnedBadgeIds = [...s.earnedBadgeIds, ...newBadges];
+  s.applyEngineResult(patch);
+}
+
+/** Bir başarı kartı paylaşılınca çağrılır (AchievementCardGallery Share) — tek seferlik rozet. */
+export function recordCardShared(): void {
+  const s = useStreakStore.getState();
+  if (s.earnedBadgeIds.includes('communityHero')) return;
+  s.applyEngineResult({ earnedBadgeIds: [...s.earnedBadgeIds, 'communityHero'] });
 }
