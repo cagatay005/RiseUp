@@ -5,6 +5,7 @@ import type { PrayerTimes } from '@/stores/prayerStore';
 import {
   computeOffsetMinutes,
   formatCountdown,
+  formatMissedDate,
   getAlarmClockTime,
   getNextPrayer,
   getPickerBaseTime,
@@ -105,6 +106,14 @@ describe('getPickerBaseTime', () => {
     const result = getPickerBaseTime('asr', null, now);
     expect(result.getHours()).toBe(16);
     expect(result.getMinutes()).toBe(30);
+  });
+});
+
+describe('formatMissedDate', () => {
+  it('"YYYY-MM-DD" → "Missed {Month} {day}"', () => {
+    expect(formatMissedDate('2026-07-17')).toBe('Missed July 17');
+    expect(formatMissedDate('2026-01-05')).toBe('Missed January 5');
+    expect(formatMissedDate('2026-12-31')).toBe('Missed December 31');
   });
 });
 

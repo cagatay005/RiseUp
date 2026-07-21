@@ -32,6 +32,7 @@ function HomeContent() {
   const currentStreak = useStreakStore((s) => s.currentStreak);
   const bestStreak = useStreakStore((s) => s.bestStreak);
   const freezes = useStreakStore((s) => s.freezes);
+  const missedCount = useStreakStore((s) => s.qadaLedger.length);
 
   useEffect(() => {
     void refreshPrayerTimesIfStale();
@@ -57,6 +58,19 @@ function HomeContent() {
       <View style={styles.gapMd}>
         <NextPrayerCountdown todayTimes={todayTimes} />
       </View>
+
+      {missedCount > 0 ? (
+        <Pressable
+          onPress={() => router.push('/qada')}
+          accessibilityRole="button"
+          style={[styles.qadaStrip, { backgroundColor: `${colors.warning}1F` }]}
+        >
+          <Ionicons name="alert-circle-outline" size={14} color={colors.warning} />
+          <AppText variant="caption" style={{ color: colors.warning }}>
+            {missedCount} missed prayer{missedCount === 1 ? '' : 's'} to make up
+          </AppText>
+        </Pressable>
+      ) : null}
 
       <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
         {sortedAlarms.length === 0 ? (
@@ -102,6 +116,14 @@ const styles = StyleSheet.create({
   },
   gapMd: {
     marginTop: spacing.lg,
+  },
+  qadaStrip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    borderRadius: radius.md,
+    padding: spacing.sm,
+    marginTop: spacing.sm,
   },
   list: {
     marginTop: spacing.md,

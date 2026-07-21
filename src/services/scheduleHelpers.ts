@@ -28,6 +28,17 @@ export function getNextPrayer(todayTimes: PrayerTimes | null, now: Date): NextPr
   return null;
 }
 
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+/** 'YYYY-MM-DD' → "Missed July 17" (kaza defteri listesi). */
+export function formatMissedDate(dayKey: string): string {
+  const [, month, day] = dayKey.split('-').map(Number);
+  return `Missed ${MONTH_NAMES[month! - 1]} ${day}`;
+}
+
 /** "1h 24m" / "24m" / "Now" biçiminde kısa geri sayım metni. */
 export function formatCountdown(target: Date, now: Date): string {
   const diffMs = target.getTime() - now.getTime();
