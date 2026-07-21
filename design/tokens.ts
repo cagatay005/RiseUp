@@ -228,12 +228,13 @@ export interface BadgeDef {
   title: string;
   /** Kazanım koşulunun kısa açıklaması */
   criteria: string;
+  icon: 'flame' | 'compass' | 'sunny' | 'mic' | 'people';
 }
 
 export const badges: readonly BadgeDef[] = [
-  { id: 'flame7', title: '7-Day Flame', criteria: '7 günlük kesintisiz seri' },
-  { id: 'qiblaMaster', title: 'Qibla Master', criteria: '50 başarılı kıble görevi' },
-  { id: 'earlyBird', title: 'Early Bird', criteria: '30 Fajr alarmı görevle kapatıldı' },
-  { id: 'reciter', title: 'Golden Reciter', criteria: '10 sure okuma %90+ skor' },
-  { id: 'communityHero', title: 'Community Hero', criteria: 'Bir başarı kartını paylaş' },
+  { id: 'flame7', title: '7-Day Flame', criteria: '7 günlük kesintisiz seri', icon: 'flame' },
+  { id: 'qiblaMaster', title: 'Qibla Master', criteria: '50 başarılı kıble görevi', icon: 'compass' },
+  { id: 'earlyBird', title: 'Early Bird', criteria: '30 Fajr alarmı görevle kapatıldı', icon: 'sunny' },
+  { id: 'reciter', title: 'Golden Reciter', criteria: '10 sure okuma %90+ skor', icon: 'mic' },
+  { id: 'communityHero', title: 'Community Hero', criteria: 'Bir başarı kartını paylaş', icon: 'people' },
 ] as const;

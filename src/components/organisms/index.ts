@@ -5,6 +5,7 @@ export {
 } from './DigitalTimePicker';
 export { SleepScienceChart } from './SleepScienceChart';
 export { TaskAssignmentPanel, type TaskAssignmentPanelProps } from './TaskAssignmentPanel';
+export { AchievementCardGallery, type AchievementCardGalleryProps } from './AchievementCardGallery';
 export { CompassDial } from './CompassDial';
 export { StreakCalendar, type StreakCalendarProps } from './StreakCalendar';
 export { WaveformMeter, type WaveformMeterProps } from './WaveformMeter';

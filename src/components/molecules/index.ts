@@ -1,4 +1,5 @@
 export { AlarmRow, type AlarmRowProps } from './AlarmRow';
+export { BadgeShelf, type BadgeShelfProps } from './BadgeShelf';
 export { DigitalClock } from './DigitalClock';
 export { FreezeCounter } from './FreezeCounter';
 export { NextPrayerCountdown } from './NextPrayerCountdown';

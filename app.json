@@ -55,6 +55,13 @@
         {
           "microphonePermission": "RiseUp, sure okuma görevinde okumanızı değerlendirmek için mikrofonunuzu kullanır."
         }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "RiseUp, başarı kartlarını galerinize kaydetmek için fotoğraflarınıza erişir.",
+          "savePhotosPermission": "RiseUp, başarı kartlarını galerinize kaydeder."
+        }
       ]
     ],
     "experiments": {
