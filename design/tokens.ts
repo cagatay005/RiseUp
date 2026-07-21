@@ -88,6 +88,8 @@ export const fonts = {
   body: 'Inter_400Regular',
   bodyMedium: 'Inter_500Medium',
   bodyBold: 'Inter_700Bold',
+  /** Dijital saat rakamları için — güçlü, "premium" bir görsel hiyerarşi ister. */
+  bodyExtraBold: 'Inter_800ExtraBold',
   bodyItalic: 'Inter_400Regular_Italic', // ayet transliterasyonu için
   arabic: 'Amiri_400Regular',
 } as const;
@@ -98,8 +100,8 @@ export const typography = {
   /** Ekran başlığı */
   h1: { fontFamily: fonts.heading, fontSize: 26, lineHeight: 34 },
   h2: { fontFamily: fonts.heading, fontSize: 20, lineHeight: 28 },
-  /** Alarm ekranı dijital saat */
-  clockDigital: { fontFamily: fonts.bodyBold, fontSize: 64, lineHeight: 72, fontVariant: ['tabular-nums'] as const },
+  /** Alarm ekranı dijital saat — extra bold, güçlü görsel hiyerarşi için büyük */
+  clockDigital: { fontFamily: fonts.bodyExtraBold, fontSize: 70, lineHeight: 78, fontVariant: ['tabular-nums'] as const },
   /** Geri sayım, seri sayısı gibi büyük rakamlar */
   numberLarge: { fontFamily: fonts.bodyBold, fontSize: 40, lineHeight: 48, fontVariant: ['tabular-nums'] as const },
   body: { fontFamily: fonts.body, fontSize: 16, lineHeight: 24 },

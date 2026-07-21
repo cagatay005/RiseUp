@@ -98,9 +98,16 @@ function HomeContent() {
         onPress={() => router.push('/alarm-setup')}
         accessibilityRole="button"
         accessibilityLabel={t.home.addAlarmLabel}
-        style={[styles.fab, { backgroundColor: colors.textPrimary }]}
+        style={[
+          styles.fab,
+          {
+            backgroundColor: colors.accent,
+            // Varsayılan Android beyazı/mavisi yerine markanın vurgu rengiyle parlıyor.
+            boxShadow: `0 4px 16px 0 ${colors.accent}80`,
+          } as object,
+        ]}
       >
-        <Ionicons name="add" size={24} color={colors.background} />
+        <Ionicons name="add" size={26} color={colors.onAccent} />
       </Pressable>
     </SafeAreaView>
   );

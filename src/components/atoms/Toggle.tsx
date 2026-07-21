@@ -15,7 +15,17 @@ export function Toggle({ value, onValueChange }: ToggleProps) {
       onPress={() => onValueChange(!value)}
       accessibilityRole="switch"
       accessibilityState={{ checked: value }}
-      style={[styles.track, { backgroundColor: value ? colors.secondary : colors.border }]}
+      style={[
+        styles.track,
+        {
+          backgroundColor: value ? colors.accent : colors.border,
+          // Açıkken vurgu rengiyle hafif parlama — varsayılan Android mavisi yerine
+          // markanın fecir turuncusu tüm etkileşimli kontrollerde tutarlı olsun diye.
+          ...(value
+            ? ({ boxShadow: `0 0 8px 1px ${colors.accent}66` } as object)
+            : null),
+        },
+      ]}
     >
       <Pressable
         pointerEvents="none"

@@ -18,7 +18,11 @@ export interface BadgeShelfProps {
   earnedBadgeIds: string[];
 }
 
-/** DESIGN §3.3: kazanılan rozetler gold çerçeveli, kazanılmayanlar silüet (soluk border). */
+/**
+ * DESIGN §3.3: kazanılan rozetler markanın "ateş" vurgu rengiyle (gold/accent)
+ * parlar; kazanılmayanlar kesik çizgili çerçeve + küçük kilit rozetiyle
+ * oyunlaştırma hissini güçlendirir ("henüz kilitli, hedefin bu" okunması net olsun diye).
+ */
 export function BadgeShelf({ earnedBadgeIds }: BadgeShelfProps) {
   const { colors } = useTheme();
   const t = useTranslation();
@@ -28,15 +32,37 @@ export function BadgeShelf({ earnedBadgeIds }: BadgeShelfProps) {
       {badges.map((badge) => {
         const earned = earnedBadgeIds.includes(badge.id);
         return (
-          <View key={badge.id} style={[styles.item, { opacity: earned ? 1 : 0.45 }]}>
-            <View style={[styles.circle, { borderColor: earned ? colors.gold : colors.border }]}>
+          <View key={badge.id} style={styles.item}>
+            <View
+              style={[
+                styles.circle,
+                earned
+                  ? {
+                      borderStyle: 'solid',
+                      borderColor: colors.gold,
+                      backgroundColor: `${colors.accent}1F`,
+                      boxShadow: `0 0 12px 1px ${colors.gold}80`,
+                    }
+                  : { borderStyle: 'dashed', borderColor: colors.border },
+              ] as object[]}
+            >
               <Ionicons
                 name={ICONS[badge.icon]}
                 size={22}
                 color={earned ? colors.gold : colors.textSecondary}
+                style={!earned ? styles.lockedIcon : undefined}
               />
+              {!earned ? (
+                <View style={[styles.lockBadge, { backgroundColor: colors.background, borderColor: colors.border }]}>
+                  <Ionicons name="lock-closed" size={10} color={colors.textSecondary} />
+                </View>
+              ) : null}
             </View>
-            <AppText variant="caption" color="textSecondary" style={styles.label}>
+            <AppText
+              variant="caption"
+              color={earned ? 'textPrimary' : 'textSecondary'}
+              style={styles.label}
+            >
               {t.badges[badge.id as keyof typeof t.badges] ?? badge.title}
             </AppText>
           </View>
@@ -61,6 +87,20 @@ const styles = StyleSheet.create({
     height: 54,
     borderRadius: radius.full,
     borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lockedIcon: {
+    opacity: 0.55,
+  },
+  lockBadge: {
+    position: 'absolute',
+    right: -2,
+    bottom: -2,
+    width: 18,
+    height: 18,
+    borderRadius: radius.full,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
