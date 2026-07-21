@@ -52,7 +52,8 @@ export default function RugScanTaskScreen() {
           <Heading variant="h2">Prayer Rug Scan is Premium</Heading>
           <AppText color="textSecondary" style={styles.center}>Unlock camera verification and build your streak with every prayer.</AppText>
           <QuoteBlock text={quote.text} compact />
-          <Button title="Back to tasks" variant="secondary" onPress={() => router.back()} />
+          <Button title="Upgrade to Premium" onPress={() => router.push('/premium')} />
+          <Button title="Back to tasks" variant="ghost" onPress={() => router.back()} />
         </View>
       </SafeAreaView>
     );

@@ -162,9 +162,15 @@ export const rules = {
   quotePoolSize: 50,
   /** Her 15 günlük seri için bir başarı kartı üretilir */
   streakCardIntervalDays: 15,
-  /** Premium */
+  /** Premium — taban fiyat (USD dışındaki para birimleri Intl ile bu tutarın biçimlendirilmiş
+   * hâlidir, gerçek zamanlı kur çevrimi değildir). */
   premiumMonthlyUsd: 4.99,
   premiumYearlyUsd: 39.99,
+  /** Türkiye için mağazaların gerçek ülke fiyat kademelerine yakın sabit TL tutarı
+   * (USD'nin birebir kur çevrimi değildir — App Store/Play Store kendi sabit
+   * kademelerini kullanır). ~%33 yıllık indirim oranı USD kademesiyle aynı kalır. */
+  premiumMonthlyTry: 79.99,
+  premiumYearlyTry: 639.99,
   trialDays: 7,
   premiumMonthlyFreezes: 10,
 } as const;

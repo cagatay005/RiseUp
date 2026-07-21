@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/atoms';
@@ -20,11 +21,11 @@ export interface TaskAssignmentPanelProps {
 /**
  * Ev (task-picker.tsx) ve Alarm kurma ekranında (alarm-setup.tsx) aynı bileşen
  * kullanılır (DESIGN.md §5: "Görev atama bölümü — Ev ekranındakiyle aynı bileşen").
- * Premium olmayan görevler kilitli ve dokunulamaz (TODO #18: Premium ekranı gelince
- * kilitliye basınca oraya yönlendirilecek).
+ * Premium olmayan görevler kilitli — dokununca Premium ekranına yönlendirir.
  */
 export function TaskAssignmentPanel({ selectedTaskIds, onToggleTask }: TaskAssignmentPanelProps) {
   const { colors } = useTheme();
+  const router = useRouter();
   const isPremium = usePremiumStore((s) => s.isPremium);
 
   return (
@@ -36,7 +37,7 @@ export function TaskAssignmentPanel({ selectedTaskIds, onToggleTask }: TaskAssig
         return (
           <Pressable
             key={task.id}
-            onPress={() => (locked ? undefined : onToggleTask(task.id))}
+            onPress={() => (locked ? router.push('/premium') : onToggleTask(task.id))}
             style={[
               styles.card,
               {

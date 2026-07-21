@@ -93,6 +93,7 @@ export default function RecitationTaskScreen() {
           <AppText color="textSecondary" style={styles.center}>
             Upgrade to dismiss alarms by reciting a verse out loud.
           </AppText>
+          <Button title="Upgrade to Premium" onPress={() => router.push('/premium')} />
           <Button title="Go Back" variant="ghost" onPress={() => router.back()} />
         </View>
       </SafeAreaView>
