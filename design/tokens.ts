@@ -190,6 +190,20 @@ export const tasks: readonly TaskDef[] = [
 ] as const;
 
 // ---------------------------------------------------------------------------
+// ARAYÜZ DİLİ
+// ---------------------------------------------------------------------------
+
+/** Arayüz dili — EN/TR ile başlar, i18n altyapısı genişlemeye açık (DESIGN §3.4). */
+export type UiLanguage = 'en' | 'tr';
+
+export const uiLanguages: readonly { id: UiLanguage; label: string }[] = [
+  { id: 'en', label: 'English' },
+  { id: 'tr', label: 'Türkçe' },
+] as const;
+
+export const defaultUiLanguage: UiLanguage = 'en';
+
+// ---------------------------------------------------------------------------
 // AYET MEALİ DİLİ
 // ---------------------------------------------------------------------------
 

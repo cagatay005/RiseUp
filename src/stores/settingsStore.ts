@@ -3,11 +3,13 @@ import { persist } from 'zustand/middleware';
 
 import {
   defaultTranslationLanguage,
+  defaultUiLanguage,
   type TranslationLanguage,
+  type UiLanguage,
 } from '../../design/tokens';
 import { persistStorage } from './storage';
 
-export type UiLanguage = 'en' | 'tr';
+export type { UiLanguage };
 
 export type PermissionState = 'unknown' | 'granted' | 'denied';
 
@@ -33,7 +35,7 @@ interface SettingsState {
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
-      language: 'en',
+      language: defaultUiLanguage,
       translationLanguage: defaultTranslationLanguage,
       onboardingDone: false,
       permissionsSnapshot: {
