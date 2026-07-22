@@ -58,11 +58,11 @@ export const en = {
     recitation: 'Verse Recitation',
   },
   badges: {
-    flame7: '7-Day Flame',
-    qiblaMaster: 'Qibla Master',
-    earlyBird: 'Early Bird',
-    reciter: 'Golden Reciter',
-    communityHero: 'Community Hero',
+    flame7: 'Station of Steadfastness',
+    qiblaMaster: 'Keeper of Niyyah',
+    earlyBird: 'True Dawn',
+    reciter: 'Master of Tartil',
+    communityHero: 'Envoy of Good',
   },
   /** Rozet ilerleme çarkının 5 seviyesi (base-5: 5 alt seviye = 1 üst seviye). */
   symbols: {
@@ -300,11 +300,11 @@ export const tr: Strings = {
     recitation: 'Sure Okuma',
   },
   badges: {
-    flame7: '7 Günlük Alev',
-    qiblaMaster: 'Kıble Ustası',
-    earlyBird: 'Erkenci Kuş',
-    reciter: 'Altın Okuyucu',
-    communityHero: 'Topluluk Kahramanı',
+    flame7: 'Sebat Makamı',
+    qiblaMaster: 'Niyet Ehli',
+    earlyBird: 'Fecr-i Sâdık',
+    reciter: 'Tertil Ehli',
+    communityHero: 'Hayır Elçisi',
   },
   symbols: {
     dot: 'Nokta',

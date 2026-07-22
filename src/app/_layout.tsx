@@ -15,6 +15,7 @@ import {
   Inter_400Regular,
   Inter_400Regular_Italic,
   Inter_500Medium,
+  Inter_600SemiBold,
   Inter_700Bold,
   Inter_800ExtraBold,
 } from '@expo-google-fonts/inter';
@@ -54,6 +55,7 @@ export default function RootLayout() {
     Inter_400Regular,
     Inter_400Regular_Italic,
     Inter_500Medium,
+    Inter_600SemiBold,
     Inter_700Bold,
     Inter_800ExtraBold,
     Amiri_400Regular,

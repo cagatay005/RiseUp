@@ -17,40 +17,75 @@ const ICONS: Record<BadgeDef['icon'], keyof typeof Ionicons.glyphMap> = {
   people: 'people',
 };
 
+/** Kart kenarlığı — sıcak, madeni bir "pewter/şampanya" ton; kilitli/kazanılmış hepsinde aynı, tutarlılık için. */
+const METALLIC_BORDER = '#B8AE9A66';
+
+/**
+ * Her rozetin madalyonu farklı bir maden/mücevher kimliğiyle parlar (parlak
+ * altın, fırçalanmış bronz, gündoğumu ateşi, zümrüt, cilalı gümüş) — hepsi
+ * tek tip altına indirgenmez. Kilitliyken bu kimlikler geçersizdir, tüm
+ * rozetler aynı soluk gri-mavi madalyonu paylaşır (bkz. renderMedallionStops).
+ */
+const MEDALLION_TONES: Record<string, [string, string, string]> = {
+  flame7: ['#F7D488', '#E9C46A', '#8A5A22'], // cilalı altın
+  qiblaMaster: ['#D8975B', '#B87333', '#6B3E1D'], // fırçalanmış bronz
+  earlyBird: ['#FFDCA8', '#F4A261', '#B5622C'], // gündoğumu ateşi
+  reciter: ['#8CE8C0', '#2E9E70', '#145C3E'], // parlayan zümrüt
+  communityHero: ['#EDEFF2', '#B9BEC6', '#7C7C82'], // cilalı gümüş
+};
+const LOCKED_TONE: [string, string, string] = ['#4A5568', '#333D4C', '#20262F'];
+
+/** communityHero sayısal bir sayaç tutmaz — kazanılınca "1 nokta" gibi ele alınır. */
+function progressCountFor(
+  badgeId: string,
+  earned: boolean,
+  counters: { bestStreak: number; qiblaCompletions: number; fajrCompletions: number; goldenRecitations: number },
+): number {
+  switch (badgeId) {
+    case 'flame7':
+      return counters.bestStreak;
+    case 'qiblaMaster':
+      return counters.qiblaCompletions;
+    case 'earlyBird':
+      return counters.fajrCompletions;
+    case 'reciter':
+      return counters.goldenRecitations;
+    case 'communityHero':
+      return earned ? 1 : 0;
+    default:
+      return 0;
+  }
+}
+
 export interface BadgeCardGridProps {
   earnedBadgeIds: string[];
 }
 
 /**
- * DESIGN — "Base-5 ilerleme çarkı": her kartın altında rozetin ham ilerleme
- * sayısı SymbolProgressRow ile beşli tabanda sembollere dönüşerek gösterilir
- * (5 nokta → 1 hilal → 1 lale → 1 kandil → 1 nur). Kilitli rozetler kesik
- * çizgili çerçeve + kilit rozeti + %30 opaklıkta gri madalyon; kazanılanlar
- * altın/turuncu parıltıyla (boxShadow) öne çıkar.
+ * "Trophy Room" rozet ızgarası: cam görünümlü (yarı saydam sıcak katman +
+ * ince madeni kenarlık) yükseltilmiş kartlar, madeni/mücevher tonlu 3B
+ * madalyonlar, her kartın altında Base-5 ilerleme çarkı (bkz.
+ * SymbolProgressRow — hiç ilerleme yoksa soluk boş yuvalar gösterir).
  */
 export function BadgeCardGrid({ earnedBadgeIds }: BadgeCardGridProps) {
   const { colors } = useTheme();
   const t = useTranslation();
 
-  // Her rozetin ham ilerleme sayısı kendi StreakEngine sayacından okunur;
-  // communityHero'nun sayısal bir ilerlemesi yok (tek seferlik kart paylaşımı).
   const bestStreak = useStreakStore((s) => s.bestStreak);
   const qiblaCompletions = useStreakStore((s) => s.qiblaCompletions);
   const fajrCompletions = useStreakStore((s) => s.fajrCompletions);
   const goldenRecitations = useStreakStore((s) => s.goldenRecitations);
 
-  const progressByBadgeId: Partial<Record<string, number>> = {
-    flame7: bestStreak,
-    qiblaMaster: qiblaCompletions,
-    earlyBird: fajrCompletions,
-    reciter: goldenRecitations,
-  };
-
   return (
     <View style={styles.grid}>
       {badges.map((badge) => {
         const earned = earnedBadgeIds.includes(badge.id);
-        const count = progressByBadgeId[badge.id] ?? 0;
+        const count = progressCountFor(badge.id, earned, {
+          bestStreak,
+          qiblaCompletions,
+          fajrCompletions,
+          goldenRecitations,
+        });
 
         return (
           <BadgeCard
@@ -60,8 +95,8 @@ export function BadgeCardGrid({ earnedBadgeIds }: BadgeCardGridProps) {
             count={count}
             colors={colors}
             title={t.badges[badge.id as keyof typeof t.badges] ?? badge.title}
-            earnedLabel={t.trophies.earned}
             lockedLabel={t.trophies.locked}
+            earnedLabel={t.trophies.earned}
           />
         );
       })}
@@ -75,86 +110,99 @@ function BadgeCard({
   count,
   colors,
   title,
-  earnedLabel,
   lockedLabel,
+  earnedLabel,
 }: {
   badge: BadgeDef;
   earned: boolean;
   count: number;
   colors: ThemeColors;
   title: string;
-  earnedLabel: string;
   lockedLabel: string;
+  earnedLabel: string;
 }) {
-  const gradientId = `badgeCardGradient-${badge.id}`;
+  const cardGradientId = `badgeCardGradient-${badge.id}`;
+  const sheenId = `badgeCardSheen-${badge.id}`;
   const medallionId = `badgeMedallion-${badge.id}`;
+  const [light, mid, dark] = earned ? MEDALLION_TONES[badge.id]! : LOCKED_TONE;
+
+  const elevationShadow = `0 6px 16px 0 rgba(0,0,0,0.35)`;
+  const glowShadow = earned ? `, 0 0 20px 0 ${colors.gold}55` : '';
 
   return (
     <View
       style={[
         styles.card,
         {
-          borderColor: earned ? colors.gold : colors.border,
-          borderStyle: earned ? 'solid' : 'dashed',
-          ...(earned ? ({ boxShadow: `0 0 18px 0 ${colors.gold}55` } as object) : null),
-        },
+          borderColor: METALLIC_BORDER,
+          boxShadow: `${elevationShadow}${glowShadow}`,
+        } as object,
       ]}
     >
       <Svg style={StyleSheet.absoluteFill}>
         <Defs>
-          <LinearGradient id={gradientId} x1="0" y1="0" x2="0.4" y2="1">
+          <LinearGradient id={cardGradientId} x1="0" y1="0" x2="0.4" y2="1">
             <Stop offset="0" stopColor="#2A3B52" stopOpacity={1} />
             <Stop offset="1" stopColor="#1A2332" stopOpacity={1} />
           </LinearGradient>
+          {/* Cam görünümü: sol üstten süzülen çok soluk, sıcak bir parlaklık katmanı. */}
+          <LinearGradient id={sheenId} x1="0" y1="0" x2="0.7" y2="0.9">
+            <Stop offset="0" stopColor="#FFFFFF" stopOpacity={0.06} />
+            <Stop offset="0.4" stopColor="#FFFFFF" stopOpacity={0.015} />
+            <Stop offset="1" stopColor="#FFFFFF" stopOpacity={0} />
+          </LinearGradient>
         </Defs>
-        <Rect x={0} y={0} width="100%" height="100%" rx={radius.md} fill={`url(#${gradientId})`} />
+        <Rect x={0} y={0} width="100%" height="100%" rx={radius.md} fill={`url(#${cardGradientId})`} />
+        <Rect x={0} y={0} width="100%" height="100%" rx={radius.md} fill={`url(#${sheenId})`} />
       </Svg>
 
       <View style={styles.medallionWrap}>
-        <Svg width={64} height={64} viewBox="0 0 64 64">
+        <Svg width={76} height={76} viewBox="0 0 76 76">
           <Defs>
-            <RadialGradient id={medallionId} cx="38%" cy="32%" r="70%">
-              <Stop offset="0" stopColor={earned ? '#F7D488' : '#4A5568'} />
-              <Stop offset="0.55" stopColor={earned ? colors.gold : '#333D4C'} />
-              <Stop offset="1" stopColor={earned ? '#8A5A22' : '#20262F'} />
+            <RadialGradient id={medallionId} cx="36%" cy="30%" r="72%">
+              <Stop offset="0" stopColor={light} />
+              <Stop offset="0.55" stopColor={mid} />
+              <Stop offset="1" stopColor={dark} />
             </RadialGradient>
           </Defs>
-          <Rect x={0} y={0} width={64} height={64} rx={32} fill={`url(#${medallionId})`} opacity={earned ? 1 : 0.3} />
+          <Rect x={0} y={0} width={76} height={76} rx={38} fill={`url(#${medallionId})`} opacity={earned ? 1 : 0.25} />
         </Svg>
         <Ionicons
           name={ICONS[badge.icon]}
-          size={26}
+          size={30}
           color={earned ? colors.onAccent : colors.textSecondary}
           style={[styles.medallionIcon, !earned && styles.lockedIcon]}
         />
-        {!earned ? (
-          <View
-            style={[styles.lockBadge, { backgroundColor: colors.background, borderColor: colors.border }]}
-            accessibilityLabel={lockedLabel}
-          >
-            <Ionicons name="lock-closed" size={12} color={colors.textSecondary} />
-          </View>
-        ) : null}
+        <View
+          style={[
+            styles.cornerBadge,
+            {
+              backgroundColor: colors.background,
+              borderColor: earned ? colors.gold : colors.border,
+            },
+          ]}
+          accessibilityLabel={earned ? earnedLabel : lockedLabel}
+        >
+          <Ionicons
+            name={earned ? 'checkmark' : 'lock-closed'}
+            size={11}
+            color={earned ? colors.gold : colors.textSecondary}
+          />
+        </View>
       </View>
 
       <AppText
-        variant="bodySmall"
+        variant="badgeTitle"
         color={earned ? 'textPrimary' : 'textSecondary'}
-        style={[styles.title, earned ? { fontWeight: '700' } : null]}
+        style={styles.title}
+        numberOfLines={2}
       >
         {title}
       </AppText>
 
-      {earned ? (
-        <View style={styles.earnedRow}>
-          <Ionicons name="checkmark-circle" size={13} color={colors.success} />
-          <AppText variant="caption" color="textSecondary">
-            {earnedLabel}
-          </AppText>
-        </View>
-      ) : (
+      <View style={styles.progressWrap}>
         <SymbolProgressRow count={count} />
-      )}
+      </View>
     </View>
   );
 }
@@ -168,8 +216,8 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '47%',
-    minHeight: 168,
-    borderWidth: 1.5,
+    minHeight: 190,
+    borderWidth: 1,
     borderRadius: radius.md,
     padding: spacing.md,
     alignItems: 'center',
@@ -177,8 +225,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   medallionWrap: {
-    width: 64,
-    height: 64,
+    width: 76,
+    height: 76,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.xs,
@@ -189,10 +237,10 @@ const styles = StyleSheet.create({
   lockedIcon: {
     opacity: 0.55,
   },
-  lockBadge: {
+  cornerBadge: {
     position: 'absolute',
     right: -4,
-    bottom: -2,
+    top: -4,
     width: 22,
     height: 22,
     borderRadius: radius.full,
@@ -203,10 +251,9 @@ const styles = StyleSheet.create({
   title: {
     textAlign: 'center',
   },
-  earnedRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs / 2,
-    marginTop: spacing.xs / 2,
+  progressWrap: {
+    marginTop: spacing.xs,
+    minHeight: 20,
+    justifyContent: 'center',
   },
 });

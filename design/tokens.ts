@@ -90,6 +90,8 @@ export const fonts = {
   bodyBold: 'Inter_700Bold',
   /** Dijital saat rakamları için — güçlü, "premium" bir görsel hiyerarşi ister. */
   bodyExtraBold: 'Inter_800ExtraBold',
+  /** Rozet başlıkları gibi "onurlu/vakur" kısa etiketler için — 700'den daha zarif. */
+  bodySemiBold: 'Inter_600SemiBold',
   bodyItalic: 'Inter_400Regular_Italic', // ayet transliterasyonu için
   arabic: 'Amiri_400Regular',
 } as const;
@@ -112,6 +114,8 @@ export const typography = {
   ayah: { fontFamily: fonts.arabic, fontSize: 30, lineHeight: 56 },
   /** Ayetin Latin harfli okunuşu — Arapça ile meal arasında, muted italik */
   transliteration: { fontFamily: fonts.bodyItalic, fontSize: 15, lineHeight: 24 },
+  /** Kupa ekranı rozet başlıkları — vakur, kısa manevi kavram adları için. */
+  badgeTitle: { fontFamily: fonts.bodySemiBold, fontSize: 13.5, lineHeight: 18 },
 } as const;
 
 // ---------------------------------------------------------------------------
