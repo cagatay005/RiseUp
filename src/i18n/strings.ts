@@ -64,6 +64,14 @@ export const en = {
     reciter: 'Golden Reciter',
     communityHero: 'Community Hero',
   },
+  /** Rozet ilerleme çarkının 5 seviyesi (base-5: 5 alt seviye = 1 üst seviye). */
+  symbols: {
+    dot: 'Dot',
+    crescent: 'Crescent',
+    tulip: 'Tulip',
+    lantern: 'Lantern',
+    nur: 'Nur',
+  },
   home: {
     noAlarmsYet: 'No alarms yet',
     addAlarm: 'Add Alarm',
@@ -106,6 +114,8 @@ export const en = {
     genericErrorTitle: 'Something went wrong',
     genericErrorBody: 'Could not process the card image.',
     streakCardTitle: (days: number) => `${days}-Day Streak`,
+    locked: 'Locked',
+    earned: 'Earned',
   },
   settings: {
     title: 'Settings',
@@ -296,6 +306,13 @@ export const tr: Strings = {
     reciter: 'Altın Okuyucu',
     communityHero: 'Topluluk Kahramanı',
   },
+  symbols: {
+    dot: 'Nokta',
+    crescent: 'Hilal',
+    tulip: 'Lale',
+    lantern: 'Kandil',
+    nur: 'Nur',
+  },
   home: {
     noAlarmsYet: 'Henüz alarm yok',
     addAlarm: 'Alarm Ekle',
@@ -338,6 +355,8 @@ export const tr: Strings = {
     genericErrorTitle: 'Bir şeyler ters gitti',
     genericErrorBody: 'Kart görseli işlenemedi.',
     streakCardTitle: (days) => `${days} Günlük Seri`,
+    locked: 'Kilitli',
+    earned: 'Kazanıldı',
   },
   settings: {
     title: 'Ayarlar',

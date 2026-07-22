@@ -1,5 +1,5 @@
 export { AlarmRow, type AlarmRowProps } from './AlarmRow';
-export { BadgeShelf, type BadgeShelfProps } from './BadgeShelf';
+export { BadgeCardGrid, type BadgeCardGridProps } from './BadgeCardGrid';
 export { DigitalClock } from './DigitalClock';
 export { FreezeCounter } from './FreezeCounter';
 export { NextPrayerCountdown } from './NextPrayerCountdown';
@@ -10,4 +10,5 @@ export { PrayerTimeStrip } from './PrayerTimeStrip';
 export { QuoteBlock } from './QuoteBlock';
 export { SettingsRow, type SettingsRowProps } from './SettingsRow';
 export { StreakFlame } from './StreakFlame';
+export { SymbolProgressRow, type SymbolProgressRowProps } from './SymbolProgressRow';
 export { TaskChip, type TaskChipProps } from './TaskChip';
